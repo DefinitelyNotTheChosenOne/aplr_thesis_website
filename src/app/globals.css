@@ -21,8 +21,8 @@
   --color-text-muted: #94A3B8;
   
   /* Fonts */
-  --font-heading: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-heading: var(--font-plus-jakarta), 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-body: var(--font-inter), 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
   /* Refined, Elegant Elevation (No Harsh Overglow) */
   --shadow-subtle: 0 4px 16px rgba(0, 0, 0, 0.3);
@@ -185,31 +185,234 @@ a {
   text-transform: uppercase;
 }
 
-/* Subtle, Smooth Floating Animations */
+/* Button Shimmer / Sheen Effect on Hover */
+.btn-gold,
+.btn-primary,
+.btn-secondary {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-gold::after,
+.btn-primary::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.28),
+    transparent
+  );
+  transform: skewX(-25deg);
+  transition: left 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+.btn-gold:hover::after,
+.btn-primary:hover::after {
+  left: 140%;
+}
+
+/* Subtle, Smooth Floating Animations respecting user-defined card rotation */
 @keyframes floatSlow {
   0%, 100% {
-    transform: translateY(0px) rotate(0deg);
+    transform: translateY(0px) rotate(var(--card-rotate, 13deg));
   }
   50% {
-    transform: translateY(-8px) rotate(0.8deg);
+    transform: translateY(-14px) rotate(calc(var(--card-rotate, 13deg) + 1.2deg));
   }
 }
 
 @keyframes floatReverse {
   0%, 100% {
-    transform: translateY(0px) rotate(0deg);
+    transform: translateY(0px) rotate(var(--card-rotate, 13deg));
   }
   50% {
-    transform: translateY(7px) rotate(-0.8deg);
+    transform: translateY(12px) rotate(calc(var(--card-rotate, 13deg) - 1.2deg));
   }
 }
 
 .animate-float-1 {
-  animation: floatSlow 7s ease-in-out infinite;
+  animation: floatSlow 6s ease-in-out infinite;
+  will-change: transform;
 }
 
 .animate-float-2 {
-  animation: floatReverse 8s ease-in-out infinite;
+  animation: floatReverse 7s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Card Wrapper Entrance Animation */
+@keyframes heroCardWrapperEnter {
+  0% {
+    opacity: 0;
+    transform: translate3d(50px, 30px, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* ==========================================================================
+   Initial Page Load Animations (Hero & Navbar)
+   ========================================================================== */
+@keyframes navSlideDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-24px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroFadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroPopIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.9) translateY(14px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes heroCardSlideIn {
+  0% {
+    opacity: 0;
+    transform: translate3d(45px, 45px, 0) rotate(4deg) scale(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) rotate(-3deg) scale(1);
+  }
+}
+
+@keyframes heroMonitorSlideIn {
+  0% {
+    opacity: 0;
+    transform: translate3d(60px, 35px, 0) rotate(12deg) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) rotate(5deg) scale(1);
+  }
+}
+
+@keyframes ambientPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.08) translate(-12px, 10px);
+    opacity: 1;
+  }
+}
+
+@keyframes ringRotateSlow {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Initial Load Animation Utility Classes */
+.anim-load-nav {
+  animation: navSlideDown 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+}
+
+.anim-load-badge {
+  animation: heroPopIn 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both;
+}
+
+.anim-load-title {
+  animation: heroFadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
+}
+
+.anim-load-subtitle {
+  animation: heroFadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.55s both;
+}
+
+.anim-load-actions {
+  animation: heroFadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.7s both;
+}
+
+.anim-load-link {
+  animation: heroFadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.85s both;
+}
+
+.anim-load-card-wrapper-1 {
+  animation: heroCardWrapperEnter 1s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both;
+}
+
+.anim-load-card-wrapper-2 {
+  animation: heroCardWrapperEnter 1s cubic-bezier(0.16, 1, 0.3, 1) 0.6s both;
+}
+
+.anim-ambient-pulse {
+  animation: ambientPulse 12s ease-in-out infinite;
+}
+
+.anim-ring-rotate {
+  animation: ringRotateSlow 60s linear infinite;
+}
+
+/* Live Pulse Radar Beacon */
+@keyframes radarBeacon {
+  0% {
+    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.75);
+  }
+  70% {
+    box-shadow: 0 0 0 7px rgba(74, 222, 128, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0);
+  }
+}
+
+.live-beacon-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4ADE80;
+  display: inline-block;
+  animation: radarBeacon 1.8s infinite;
+}
+
+/* Tab Content Switch Fade */
+@keyframes tabEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(14px) scale(0.99);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.tab-content-enter {
+  animation: tabEnter 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 /* Custom Scrollbar */
@@ -225,4 +428,54 @@ a {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #F5A623;
+}
+
+/* ==========================================================================
+   Scroll-Triggered Reveal Animations
+   ========================================================================== */
+.scroll-reveal {
+  opacity: 0;
+  will-change: opacity, transform;
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.scroll-reveal.reveal-up {
+  transform: translate3d(0, 36px, 0);
+}
+
+.scroll-reveal.reveal-down {
+  transform: translate3d(0, -36px, 0);
+}
+
+.scroll-reveal.reveal-left {
+  transform: translate3d(-40px, 0, 0);
+}
+
+.scroll-reveal.reveal-right {
+  transform: translate3d(40px, 0, 0);
+}
+
+.scroll-reveal.reveal-zoom {
+  transform: scale(0.92) translate3d(0, 20px, 0);
+}
+
+.scroll-reveal.scroll-revealed {
+  opacity: 1 !important;
+  transform: translate3d(0, 0, 0) scale(1) !important;
+}
+
+/* Motion Sensitivity / Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .scroll-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
 }

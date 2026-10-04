@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import styles from "../page.module.css";
+import ScrollReveal from "./ScrollReveal";
 import {
   Smartphone,
   ShieldCheck,
@@ -108,45 +109,51 @@ export default function ShowcaseTabs(): React.JSX.Element {
 
   return (
     <div className={styles.showcaseSection} id="system-showcase">
-      <div className={styles.sectionHeader}>
-        <span className="badge-pill">Interactive Showcase</span>
-        <h2 className={styles.sectionTitle}>
-          Integrated App & Hardware System
-        </h2>
-        <p className={styles.sectionSubtitle}>
-          From mobile client apps to edge AI vision and IoT gate barriers, explore
-          the complete IntelliGate ecosystem.
-        </p>
-      </div>
+      <ScrollReveal direction="up" delay={50} duration={800}>
+        <div className={styles.sectionHeader}>
+          <span className="badge-pill">Interactive Showcase</span>
+          <h2 className={styles.sectionTitle}>
+            Integrated App & Hardware System
+          </h2>
+          <p className={styles.sectionSubtitle}>
+            From mobile client apps to edge AI vision and IoT gate barriers, explore
+            the complete IntelliGate ecosystem.
+          </p>
+        </div>
+      </ScrollReveal>
 
-      <div className={styles.showcaseTabs} role="tablist" aria-label="System Showcase Navigation">
-        {SHOWCASE_DATA.map((tab) => {
-          const isActive = tab.id === activeTabId;
-          return (
-            <button
-              key={tab.id}
-              role="tab"
-              aria-selected={isActive}
-              aria-controls={`panel-${tab.id}`}
-              id={`tab-${tab.id}`}
-              className={`${styles.showcaseTabBtn} ${
-                isActive ? styles.showcaseTabBtnActive : ""
-              }`}
-              onClick={() => setActiveTabId(tab.id)}
-            >
-              {tab.icon}
-              <span>{tab.tabLabel}</span>
-            </button>
-          );
-        })}
-      </div>
+      <ScrollReveal direction="up" delay={180} duration={800}>
+        <div className={styles.showcaseTabs} role="tablist" aria-label="System Showcase Navigation">
+          {SHOWCASE_DATA.map((tab) => {
+            const isActive = tab.id === activeTabId;
+            return (
+              <button
+                key={tab.id}
+                role="tab"
+                aria-selected={isActive}
+                aria-controls={`panel-${tab.id}`}
+                id={`tab-${tab.id}`}
+                className={`${styles.showcaseTabBtn} ${
+                  isActive ? styles.showcaseTabBtnActive : ""
+                }`}
+                onClick={() => setActiveTabId(tab.id)}
+              >
+                {tab.icon}
+                <span>{tab.tabLabel}</span>
+              </button>
+            );
+          })}
+        </div>
+      </ScrollReveal>
 
-      <div
-        className={styles.showcaseDisplay}
-        role="tabpanel"
-        id={`panel-${currentItem.id}`}
-        aria-labelledby={`tab-${currentItem.id}`}
-      >
+      <ScrollReveal direction="up" delay={260} duration={850}>
+        <div
+          key={currentItem.id}
+          className={`${styles.showcaseDisplay} tab-content-enter`}
+          role="tabpanel"
+          id={`panel-${currentItem.id}`}
+          aria-labelledby={`tab-${currentItem.id}`}
+        >
         <div className={styles.showcaseDetails}>
           <span className={styles.showcaseTag}>{currentItem.tag}</span>
           <h3 className={styles.showcaseHeading}>{currentItem.title}</h3>
@@ -272,6 +279,7 @@ export default function ShowcaseTabs(): React.JSX.Element {
           )}
         </div>
       </div>
+      </ScrollReveal>
     </div>
   );
 }
