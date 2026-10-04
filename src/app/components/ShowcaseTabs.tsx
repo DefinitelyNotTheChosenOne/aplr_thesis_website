@@ -14,6 +14,8 @@ import {
   Wrench,
   Clock,
   Sparkles,
+  Download,
+  ExternalLink,
 } from "lucide-react";
 
 interface ShowcaseFeature {
@@ -174,6 +176,22 @@ export default function ShowcaseTabs(): React.JSX.Element {
                 </li>
               ))}
             </ul>
+
+            {(currentItem.id === "user-app" || currentItem.id === "admin-app") && (
+              <div style={{ marginTop: "1.75rem" }}>
+                <a
+                  href="https://drive.google.com/drive/folders/119sLWwebH6a5DMppAmZeSClt8jMkla7V?usp=sharing"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-gold"
+                  aria-label={`Download ${currentItem.tabLabel} from Google Drive (opens in a new tab)`}
+                >
+                  <Download size={18} />
+                  <span>Download App ({currentItem.tabLabel})</span>
+                  <ExternalLink size={14} />
+                </a>
+              </div>
+            )}
           </div>
 
           <div className={styles.mockupFrameWrapper}>

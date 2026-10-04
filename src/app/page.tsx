@@ -127,8 +127,14 @@ export default function Home(): React.JSX.Element {
                 <span>Explore System</span>
                 <ArrowRight size={18} />
               </a>
-              <a href="#thesis-spotlight" className="btn-secondary" aria-label="View Thesis Details">
-                <span>Download App / Specs</span>
+              <a
+                href="https://drive.google.com/drive/folders/119sLWwebH6a5DMppAmZeSClt8jMkla7V?usp=sharing"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-secondary"
+                aria-label="Download App (opens in Google Drive in a new tab)"
+              >
+                <span>Download App</span>
                 <Download size={18} />
               </a>
             </div>
@@ -440,6 +446,16 @@ export default function Home(): React.JSX.Element {
                 </a>
                 <a href="#architecture" className={styles.navLink}>
                   System Specs
+                </a>
+                <a
+                  href="https://drive.google.com/drive/folders/119sLWwebH6a5DMppAmZeSClt8jMkla7V?usp=sharing"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.navLink}
+                  style={{ color: "#F5A623" }}
+                  aria-label="Download App on Google Drive (opens in a new tab)"
+                >
+                  Download App ↗
                 </a>
               </div>
 
