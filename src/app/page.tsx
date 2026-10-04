@@ -156,7 +156,7 @@ export default function Home(): React.JSX.Element {
                     <div style={{ fontSize: "0.7rem", color: "#94A3B8", textTransform: "uppercase" }}>
                       Detected Plate
                     </div>
-                    <div className={styles.plateNumber}>NCS 8829</div>
+                    <div className={styles.plateNumber}>LGJ 910</div>
                   </div>
                   <div className={styles.plateBadge}>
                     <CheckCircle size={14} />
@@ -167,15 +167,15 @@ export default function Home(): React.JSX.Element {
                 <div className={styles.cardMetaGrid}>
                   <div className={styles.cardMetaItem}>
                     <span className={styles.cardMetaLabel}>Authorized Owner</span>
-                    <span className={styles.cardMetaValue}>Dr. Sarah Jenkins</span>
+                    <span className={styles.cardMetaValue}>Student test123</span>
                   </div>
                   <div className={styles.cardMetaItem}>
                     <span className={styles.cardMetaLabel}>Affiliation</span>
-                    <span className={styles.cardMetaValue}>Faculty / CCS Dept</span>
+                    <span className={styles.cardMetaValue}>BSCPE 4A Campus</span>
                   </div>
                   <div className={styles.cardMetaItem}>
                     <span className={styles.cardMetaLabel}>Access Lane</span>
-                    <span className={styles.cardMetaValue}>Gate 01 Inbound</span>
+                    <span className={styles.cardMetaValue}>Main Gate Inbound</span>
                   </div>
                   <div className={styles.cardMetaItem}>
                     <span className={styles.cardMetaLabel}>Barrier Clearance</span>
@@ -216,10 +216,10 @@ export default function Home(): React.JSX.Element {
                 </div>
 
                 <div style={{ fontSize: "0.8rem", color: "#CBD5E1", marginBottom: "0.5rem" }}>
-                  Vehicle Type: <strong>White Toyota Fortuner (SUV)</strong>
+                  Vehicle Type: <strong>White SUV (OLD_SERIES_4W)</strong>
                 </div>
                 <div style={{ fontSize: "0.8rem", color: "#CBD5E1", marginBottom: "0.75rem" }}>
-                  Confidence Score: <strong style={{ color: "#F5A623" }}>99.4% YOLOv11s</strong>
+                  Confidence Score: <strong style={{ color: "#F5A623" }}>86.0% YOLOv11s</strong>
                 </div>
 
                 <div
@@ -232,7 +232,7 @@ export default function Home(): React.JSX.Element {
                 >
                   <div
                     style={{
-                      width: "99.4%",
+                      width: "86.0%",
                       height: "100%",
                       background: "linear-gradient(90deg, #1A2BA6, #F5A623)",
                     }}
