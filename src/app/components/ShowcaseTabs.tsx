@@ -179,7 +179,6 @@ export default function ShowcaseTabs(): React.JSX.Element {
           <div className={styles.mockupFrameWrapper}>
             {currentItem.mockupType === "phone" && currentItem.imageSrc && (
               <div className={styles.phoneMockupFrame}>
-                <div className={styles.phoneSpeaker} />
                 <div className={styles.phoneScreenContent}>
                   <Image
                     src={currentItem.imageSrc}
@@ -189,11 +188,6 @@ export default function ShowcaseTabs(): React.JSX.Element {
                     className={styles.phoneScreenImage}
                     priority
                   />
-                  <div className={styles.phoneGlareOverlay} />
-                  <div className={styles.phoneBadgeOverlay}>
-                    <span className="live-beacon-dot" />
-                    <span>{currentItem.badgeText}</span>
-                  </div>
                 </div>
               </div>
             )}
@@ -222,10 +216,6 @@ export default function ShowcaseTabs(): React.JSX.Element {
                     className={styles.aiVisionScreenImage}
                     priority
                   />
-                  <div className={styles.aiVisionHudOverlay}>
-                    <span className={styles.aiHudTag}>CONFIDENCE: 86.0%</span>
-                    <span className={styles.aiHudTagGold}>TARGET: LGJ910</span>
-                  </div>
                 </div>
 
                 <div className={styles.aiVisionTelemetry}>
