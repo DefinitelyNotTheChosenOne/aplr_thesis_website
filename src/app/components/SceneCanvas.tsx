@@ -4,6 +4,7 @@ import React, { useRef, useMemo, useEffect, Suspense } from "react";
 import * as THREE from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Html, Environment } from "@react-three/drei";
+import type { MotionValue } from "framer-motion";
 import { ScreenUser } from "./ScreenUser";
 import { ScreenAdmin } from "./ScreenAdmin";
 import { ScreenYolo } from "./ScreenYolo";
@@ -126,6 +127,7 @@ export function calcScrollStageState(offset: number): ScrollStageState {
 }
 
 export interface SceneCanvasProps {
+  progress?: MotionValue<number>;
   progressRef?: React.RefObject<number>;
   textRef1?: React.RefObject<HTMLDivElement | null>;
   textRef2?: React.RefObject<HTMLDivElement | null>;
@@ -137,6 +139,7 @@ export interface SceneCanvasProps {
 }
 
 export const SceneCanvas = React.memo(function SceneCanvas({
+  progress,
   progressRef,
   textRef1,
   textRef2,
@@ -243,11 +246,11 @@ export const SceneCanvas = React.memo(function SceneCanvas({
   }, [particleCount]);
 
   useFrame((_, delta) => {
-    // Read normalized damped scroll offset (0.0 to 1.0 across runway)
-    const targetOffset = progressRef?.current ?? 0;
+    // Read normalized scroll progress directly from Framer Motion MotionValue
+    const rawProgress = progress ? progress.get() : (progressRef?.current ?? 0);
     currentOffsetRef.current = THREE.MathUtils.damp(
       currentOffsetRef.current,
-      targetOffset,
+      rawProgress,
       7.0,
       delta
     );
@@ -270,73 +273,64 @@ export const SceneCanvas = React.memo(function SceneCanvas({
 
     // -----------------------------------------------------------------------
     // 2. 3D UI CONTAINER & JOURNEY (Requirement 2)
-    //    Stage 1 (0.0 - 0.33): Container floats on right, tilted slightly downward.
-    //    Stage 2 (0.33 - 0.66): Swings forward on Z-axis (scaling up), rotates on
-    //                           Y-axis, and shifts slightly on Y-axis for weight.
-    //    Stage 3 (0.66 - 1.0): Tilts back dramatically into hero perspective.
+    //    Canvas is mounted inside the right column (54% screen width).
+    //    Center (x = 0) aligns with the right column center (~73vw).
     // -----------------------------------------------------------------------
-    const isMobile = viewport.width < 7.2;
-    const rightBaseX = isMobile
-      ? 0
-      : Math.min(2.1, Math.max(1.35, viewport.width * 0.22));
-    const baseScale = isMobile ? 0.74 : 1.0;
+    const isMobile = size.width < 560;
+    const baseScale = isMobile
+      ? 0.72
+      : Math.min(1.02, Math.max(0.78, viewport.width / 4.1));
 
-    let targetX = rightBaseX;
-    let targetY = isMobile ? 0.45 : -0.05;
+    let targetX = 0;
+    let targetY = isMobile ? 0.35 : 0.0;
     let targetZ = -0.05;
-    let targetRotX = 0.24;
-    let targetRotY = -0.36;
+    let targetRotX = 0.22;
+    let targetRotY = -0.32;
     let targetRotZ = 0.02;
     let targetScale = baseScale;
 
     if (offset <= 0.33) {
-      // Stage 1 (0.0 – 0.33): Right-docked, tilted downward with gentle float
+      // Stage 1 (0.0 – 0.33): Centered in right column, tilted downward with gentle float
       const floatT = Math.sin((offset * Math.PI) / 0.33);
-      targetX = rightBaseX;
-      targetY = (isMobile ? 0.45 : -0.05) + floatT * 0.035;
+      targetX = 0;
+      targetY = (isMobile ? 0.35 : 0.0) + floatT * 0.035;
       targetZ = -0.05 + floatT * 0.035;
-      targetRotX = 0.24;
-      targetRotY = -0.36;
+      targetRotX = 0.22;
+      targetRotY = -0.32;
       targetRotZ = 0.02;
       targetScale = baseScale;
     } else if (offset <= 0.66) {
       // Transition from Stage 1 to Stage 2:
-      // Container swings forward on Z, scales up, rotates on Y, shifts down on Y
+      // Swings forward on Z, scales up, rotates on Y, shifts down on Y for weight
       const t = (offset - 0.33) / 0.33;
       const s = t * t * (3 - 2 * t); // smoothstep interpolation
 
-      const kf1Y = isMobile ? 0.45 : -0.05;
-      const kf2Y = isMobile ? 0.22 : -0.34; // Shifted downward for physical weight
-      const kf2X = isMobile ? 0 : rightBaseX - 0.12;
+      const kf1Y = isMobile ? 0.35 : 0.0;
+      const kf2Y = isMobile ? 0.15 : -0.16;
 
-      targetX = THREE.MathUtils.lerp(rightBaseX, kf2X, s);
+      targetX = THREE.MathUtils.lerp(0, -0.04, s);
       targetY = THREE.MathUtils.lerp(kf1Y, kf2Y, s);
-      targetZ = THREE.MathUtils.lerp(-0.05, 0.52, s); // Swings forward on Z-axis
-      targetRotX = THREE.MathUtils.lerp(0.24, -0.06, s);
-      targetRotY = THREE.MathUtils.lerp(-0.36, 0.38, s); // Rotates on Y-axis
-      targetRotZ = THREE.MathUtils.lerp(0.02, -0.03, s);
-      targetScale = THREE.MathUtils.lerp(baseScale, baseScale * 1.15, s); // Scaled up
+      targetZ = THREE.MathUtils.lerp(-0.05, 0.45, s);
+      targetRotX = THREE.MathUtils.lerp(0.22, -0.04, s);
+      targetRotY = THREE.MathUtils.lerp(-0.32, 0.32, s);
+      targetRotZ = THREE.MathUtils.lerp(0.02, -0.02, s);
+      targetScale = THREE.MathUtils.lerp(baseScale, baseScale * 1.12, s);
     } else {
       // Transition from Stage 2 to Stage 3:
-      // Sleek hero perspective - balanced cinematic tilt keeping UI flush and locked
+      // Hero perspective - balanced cinematic tilt keeping UI flush and locked
       const t = Math.min(1, (offset - 0.66) / 0.34);
       const s = t * t * (3 - 2 * t);
 
-      const kf2Y = isMobile ? 0.22 : -0.34;
-      const kf2X = isMobile ? 0 : rightBaseX - 0.12;
-      const kf3Y = isMobile ? 0.35 : 0.04;
+      const kf2Y = isMobile ? 0.15 : -0.16;
+      const kf3Y = isMobile ? 0.25 : 0.02;
 
-      targetX = THREE.MathUtils.lerp(kf2X, rightBaseX, s);
+      targetX = THREE.MathUtils.lerp(-0.04, 0, s);
       targetY = THREE.MathUtils.lerp(kf2Y, kf3Y, s);
-      targetZ = THREE.MathUtils.lerp(0.52, 0.14, s);
-      targetRotX = THREE.MathUtils.lerp(-0.06, -0.18, s); // Refined -10° hero tilt
-      targetRotY = THREE.MathUtils.lerp(0.38, -0.16, s);
-      targetRotZ = THREE.MathUtils.lerp(-0.03, 0.02, s);
-      targetScale = THREE.MathUtils.lerp(
-        baseScale * 1.15,
-        baseScale * 1.05,
-        s
-      );
+      targetZ = THREE.MathUtils.lerp(0.45, 0.12, s);
+      targetRotX = THREE.MathUtils.lerp(-0.04, -0.14, s);
+      targetRotY = THREE.MathUtils.lerp(0.32, -0.12, s);
+      targetRotZ = THREE.MathUtils.lerp(-0.02, 0.01, s);
+      targetScale = THREE.MathUtils.lerp(baseScale * 1.12, baseScale * 1.04, s);
     }
 
     // -----------------------------------------------------------------------
@@ -546,7 +540,7 @@ export const SceneCanvas = React.memo(function SceneCanvas({
       {/* ===================================================================
           ROTATING 3D GROUP (Parent container with 3D backdrop & HTML screens)
           =================================================================== */}
-      <group ref={groupRef} position={[1.45, -0.05, -0.05]}>
+      <group ref={groupRef} position={[0, 0, -0.05]}>
         {/* 1. Soft Diffuse Aura Glow Behind the Device Chassis */}
         <mesh position={[0, 0, -0.075]}>
           <planeGeometry args={[3.35, 2.5]} />
@@ -583,11 +577,11 @@ export const SceneCanvas = React.memo(function SceneCanvas({
           transform
           center
           portal={portalRef}
-          distanceFactor={2.0}
+          distanceFactor={1.0}
           position={[0, 0, 0.072]}
           style={{
-            width: "580px",
-            height: "410px",
+            width: "1160px",
+            height: "820px",
             userSelect: "none",
           }}
         >
@@ -596,10 +590,10 @@ export const SceneCanvas = React.memo(function SceneCanvas({
               width: "100%",
               height: "100%",
               background: "#080c1d",
-              borderRadius: "16px",
-              border: "1px solid rgba(255, 255, 255, 0.1)",
+              borderRadius: "32px",
+              border: "2px solid rgba(255, 255, 255, 0.1)",
               boxShadow:
-                "0 24px 60px rgba(0, 0, 0, 0.75), 0 0 50px rgba(91, 91, 240, 0.25)",
+                "0 48px 120px rgba(0, 0, 0, 0.75), 0 0 100px rgba(91, 91, 240, 0.25)",
               display: "flex",
               flexDirection: "column",
               overflow: "hidden",
@@ -611,40 +605,40 @@ export const SceneCanvas = React.memo(function SceneCanvas({
             {/* macOS Window Topbar */}
             <div
               style={{
-                height: "42px",
+                height: "80px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
-                padding: "0 16px",
+                padding: "0 32px",
                 background: "rgba(10, 14, 30, 0.95)",
-                borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
+                borderBottom: "2px solid rgba(255, 255, 255, 0.08)",
                 flexShrink: 0,
               }}
             >
               {/* Traffic Lights */}
               <div
-                style={{ display: "flex", alignItems: "center", gap: "7px" }}
+                style={{ display: "flex", alignItems: "center", gap: "14px" }}
               >
                 <div
                   style={{
-                    width: 10,
-                    height: 10,
+                    width: 20,
+                    height: 20,
                     borderRadius: "50%",
                     background: "#ff5f57",
                   }}
                 />
                 <div
                   style={{
-                    width: 10,
-                    height: 10,
+                    width: 20,
+                    height: 20,
                     borderRadius: "50%",
                     background: "#febc2e",
                   }}
                 />
                 <div
                   style={{
-                    width: 10,
-                    height: 10,
+                    width: 20,
+                    height: 20,
                     borderRadius: "50%",
                     background: "#28c840",
                   }}
@@ -656,9 +650,9 @@ export const SceneCanvas = React.memo(function SceneCanvas({
                 ref={titleFilenameRef}
                 style={{
                   fontFamily: "monospace",
-                  fontSize: "0.78rem",
+                  fontSize: "1.5rem",
                   color: "#94a3b8",
-                  letterSpacing: "0.5px",
+                  letterSpacing: "1px",
                   fontWeight: 600,
                 }}
               >
@@ -670,21 +664,21 @@ export const SceneCanvas = React.memo(function SceneCanvas({
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
-                  gap: 5,
-                  fontSize: "0.68rem",
+                  gap: 10,
+                  fontSize: "1.35rem",
                   fontFamily: "monospace",
                   fontWeight: 700,
                   color: "#4ade80",
                   background: "rgba(34, 197, 94, 0.12)",
-                  border: "1px solid rgba(34, 197, 94, 0.35)",
-                  padding: "2px 8px",
+                  border: "2px solid rgba(34, 197, 94, 0.35)",
+                  padding: "4px 16px",
                   borderRadius: "9999px",
                 }}
               >
                 <span
                   style={{
-                    width: 5,
-                    height: 5,
+                    width: 10,
+                    height: 10,
                     borderRadius: "50%",
                     background: "#22c55e",
                   }}
@@ -699,7 +693,7 @@ export const SceneCanvas = React.memo(function SceneCanvas({
                 flex: 1,
                 position: "relative",
                 width: "100%",
-                height: "368px",
+                height: "740px",
                 overflow: "hidden",
                 background: "#050711",
               }}

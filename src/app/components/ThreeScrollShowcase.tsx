@@ -1,14 +1,11 @@
 "use client";
 
-import React, { useState, useRef, useCallback, useEffect } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import { Canvas } from "@react-three/fiber";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useScroll } from "framer-motion";
 import { getLenis } from "../lib/lenis";
 import { SceneCanvas } from "./SceneCanvas";
 import styles from "./ThreeScrollShowcase.module.css";
-
-gsap.registerPlugin(ScrollTrigger);
 import {
   Scan,
   Smartphone,
@@ -25,32 +22,18 @@ export function ThreeScrollShowcase(): React.JSX.Element {
   const [activeStage, setActiveStage] = useState<0 | 1 | 2>(0);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Shared DOM refs for 60fps RAF synchronization without React re-render lag
-  const runwayRef = useRef<HTMLElement>(null);
-  const progressRef = useRef<number>(0);
+  // 300vh parent container tracked by Framer Motion useScroll
+  const containerRef = useRef<HTMLDivElement>(null);
   const textRef1 = useRef<HTMLDivElement>(null);
   const textRef2 = useRef<HTMLDivElement>(null);
   const textRef3 = useRef<HTMLDivElement>(null);
   const hudStagePillsRef = useRef<(HTMLButtonElement | null)[]>([]);
 
-  // Wire GSAP ScrollTrigger to track scroll progress across the 350vh runway
-  useEffect(() => {
-    if (!runwayRef.current) return;
-
-    const trigger = ScrollTrigger.create({
-      trigger: runwayRef.current,
-      start: "top top",
-      end: "bottom bottom",
-      scrub: 0.5,
-      onUpdate: (self) => {
-        progressRef.current = self.progress;
-      },
-    });
-
-    return () => {
-      trigger.kill();
-    };
-  }, []);
+  // Framer Motion useScroll driving 0 to 1 scrollYProgress
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"],
+  });
 
   // Handle stage change from 3D frame ticker
   const handleStageChange = useCallback((stage: 0 | 1 | 2) => {
@@ -59,11 +42,11 @@ export function ThreeScrollShowcase(): React.JSX.Element {
 
   // Jump to stage on HUD pill click using page-level Lenis smooth scroll
   const scrollToStage = (stageIndex: 0 | 1 | 2) => {
-    if (!runwayRef.current) return;
+    if (!containerRef.current) return;
     const lenis = getLenis();
-    const rect = runwayRef.current.getBoundingClientRect();
+    const rect = containerRef.current.getBoundingClientRect();
     const runwayTop = window.scrollY + rect.top;
-    const scrollableDistance = runwayRef.current.offsetHeight - window.innerHeight;
+    const scrollableDistance = containerRef.current.offsetHeight - window.innerHeight;
     const targetScroll = runwayTop + (stageIndex / 2) * scrollableDistance;
     if (lenis) {
       lenis.scrollTo(targetScroll);
@@ -81,11 +64,23 @@ export function ThreeScrollShowcase(): React.JSX.Element {
 
   return (
     <section
-      ref={runwayRef}
-      className={styles.showcaseRunway}
+      ref={containerRef}
+      className={`${styles.showcaseRunway} relative h-[300vh] w-full`}
       id="three-scroll-showcase"
+      style={{ position: "relative", height: "300vh", width: "100%", background: "#05060d" }}
     >
-      <div className={styles.stickyViewport}>
+      <div
+        className={`${styles.stickyViewport} sticky top-0 h-screen w-full flex overflow-hidden`}
+        style={{
+          position: "sticky",
+          top: 0,
+          height: "100vh",
+          width: "100%",
+          display: "flex",
+          overflow: "hidden",
+          background: "#05060d",
+        }}
+      >
       {/* -------------------------------------------------------------------
           Top HUD Bar (Brand Beacon & Stage Navigation Pills)
           ------------------------------------------------------------------- */}
@@ -141,35 +136,8 @@ export function ThreeScrollShowcase(): React.JSX.Element {
         </nav>
       </header>
 
-      {/* -------------------------------------------------------------------
-          Full-Screen <Canvas> wrapped in <ScrollControls damping={0.2} pages={3}>
-          (Requirement 1)
-          ------------------------------------------------------------------- */}
-      <div className={styles.canvasWrapper}>
-          <Canvas
-            camera={{ position: [0, 0, 5], fov: 48 }}
-            dpr={[1, 1.5]}
-            gl={{
-              antialias: true,
-              alpha: true,
-              powerPreference: "high-performance",
-            }}
-            style={{ width: "100%", height: "100%" }}
-          >
-            <SceneCanvas
-              progressRef={progressRef}
-              textRef1={textRef1}
-              textRef2={textRef2}
-              textRef3={textRef3}
-              hudStagePillsRef={hudStagePillsRef}
-              onStageChange={handleStageChange}
-            />
-          </Canvas>
-      </div>
-
-      {/* Scrollytelling overlay with 2-column layout (50% left column text descriptions) */}
-      <div className={styles.scrollyOverlay}>
-        <div className={styles.twoColumnLayout}>
+      {/* Split Sticky Wrapper into Two Columns: Left column for HTML text, Right column for Canvas */}
+      <div className={styles.twoColumnLayout}>
                   {/* Left Column (50% width) - Text Descriptions */}
                   <div className={styles.leftTextColumn}>
                     {/* =========================================================
@@ -538,10 +506,29 @@ export function ThreeScrollShowcase(): React.JSX.Element {
                     </div>
                   </div>
 
-                  {/* Right Column (50% width) - Space for the Traveling 3D UI Container */}
-                  <div className={styles.rightCanvasColumn} aria-hidden="true" />
+                  {/* Right Column (50% width) - Dedicated WebGL Canvas */}
+                  <div className={styles.rightCanvasColumn}>
+                    <Canvas
+                      camera={{ position: [0, 0, 5], fov: 48 }}
+                      dpr={[1, 1.5]}
+                      gl={{
+                        antialias: true,
+                        alpha: true,
+                        powerPreference: "high-performance",
+                      }}
+                      style={{ width: "100%", height: "100%" }}
+                    >
+                      <SceneCanvas
+                        progress={scrollYProgress}
+                        textRef1={textRef1}
+                        textRef2={textRef2}
+                        textRef3={textRef3}
+                        hudStagePillsRef={hudStagePillsRef}
+                        onStageChange={handleStageChange}
+                      />
+                    </Canvas>
+                  </div>
                 </div>
-              </div>
 
       {/* -------------------------------------------------------------------
           Bottom HUD Bar (Interactive tip & Hardware indicator)
