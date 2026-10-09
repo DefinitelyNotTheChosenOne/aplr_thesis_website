@@ -411,26 +411,61 @@
   background: rgba(245, 166, 35, 0.22);
 }
 
-/* The three screens are stacked in the same position */
+/* The three screens are stacked in the vertical filmstrip track */
 .screensContainer {
   position: relative;
   width: 100%;
-  min-height: 380px;
+  height: 390px;
   overflow: hidden;
   border-radius: 12px;
   background: #050711;
 }
 
-.screenLayer {
+.screensTrack {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  will-change: transform;
+}
+
+.screenSlide {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
+}
+
+.screenSlide:nth-child(1) {
+  top: 0%;
+}
+
+.screenSlide:nth-child(2) {
+  top: 100%;
+}
+
+.screenSlide:nth-child(3) {
+  top: 200%;
+}
+
+.screenLayer {
+  position: relative;
+  width: 100%;
+  height: 100%;
   padding: 16px;
   border-radius: 12px;
   background: #050711;
-  will-change: clip-path, opacity;
+  box-sizing: border-box;
+}
+
+.realScreenshotOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 25;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #050711;
+  transition: opacity 0.25s ease;
 }
 
 /* Shared traveling plate chip */
@@ -887,5 +922,25 @@
   }
   .windowFrameWrap {
     max-width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .headlineWrap {
+    font-size: 1.8rem;
+  }
+  .screensContainer {
+    height: 380px;
+  }
+  .tabBtn {
+    padding: 5px 8px;
+    font-size: 0.68rem;
+  }
+  .descLine {
+    font-size: 0.9rem;
+    line-height: 1.55;
+  }
+  .checklistItem {
+    font-size: 0.82rem;
   }
 }

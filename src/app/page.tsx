@@ -4,7 +4,9 @@ import React, { useEffect, useRef } from "react";
 import Lenis from "lenis";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { FeatureStage } from "./components/FeatureStage";
+import { ThreeScrollShowcase } from "./components/ThreeScrollShowcase";
+import { setLenis, getLenis } from "./lib/lenis";
+import { useStageStore } from "./store/useStageStore";
 import styles from "./page.module.css";
 import { Download, ArrowRight, ArrowUp } from "lucide-react";
 
@@ -25,6 +27,7 @@ export default function Home(): React.JSX.Element {
       touchMultiplier: 2,
     });
     lenisRef.current = lenis;
+    setLenis(lenis);
 
     lenis.on("scroll", ScrollTrigger.update);
 
@@ -35,30 +38,41 @@ export default function Home(): React.JSX.Element {
     gsap.ticker.add(tickerCallback);
     gsap.ticker.lagSmoothing(0);
 
+    // Document-level ScrollTrigger to continuously update pageProgress in Zustand store
+    const pageTrigger = ScrollTrigger.create({
+      trigger: document.documentElement,
+      start: "top top",
+      end: "bottom bottom",
+      onUpdate: (s) => useStageStore.getState().setStageState({ pageProgress: s.progress }),
+    });
+
     const refreshTimer = setTimeout(() => {
       ScrollTrigger.refresh();
     }, 150);
 
     return () => {
       clearTimeout(refreshTimer);
+      pageTrigger.kill();
       gsap.ticker.remove(tickerCallback);
       lenis.destroy();
-      ScrollTrigger.getAll().forEach((t) => t.kill());
+      setLenis(null);
     };
   }, []);
 
   const scrollToStage = () => {
-    if (lenisRef.current) {
-      const el = document.getElementById("feature-stage");
-      if (el) lenisRef.current.scrollTo(el);
+    const lenis = getLenis();
+    const el = document.getElementById("three-scroll-showcase") || document.getElementById("feature-stage");
+    if (lenis && el) {
+      lenis.scrollTo(el);
     } else {
-      document.getElementById("feature-stage")?.scrollIntoView({ behavior: "smooth" });
+      el?.scrollIntoView({ behavior: "smooth" });
     }
   };
 
   const scrollToTop = () => {
-    if (lenisRef.current) {
-      lenisRef.current.scrollTo(0);
+    const lenis = getLenis();
+    if (lenis) {
+      lenis.scrollTo(0);
     } else {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -121,11 +135,11 @@ export default function Home(): React.JSX.Element {
       </section>
 
       {/* ===================================================================
-          2. PINNED SCROLLYTELLING FEATURE STAGE (ONE Continuous Piece)
-          ONE window card & ONE text block morphing through three stories:
+          2. 3D WEBGL HARDWARE-ACCELERATED SCROLL SHOWCASE (Three.js + R3F + Drei)
+          Hardware-accelerated 3D device card rotation & embedded screens:
           01 User App -> 02 Admin Side -> 03 YOLOv11 AI
           =================================================================== */}
-      <FeatureStage />
+      <ThreeScrollShowcase />
 
       {/* ===================================================================
           3. FINAL CTA SECTION (Exact Match to User Screenshot!)

@@ -6,10 +6,17 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import styles from "./FeatureStage.module.css";
 import { WindowFrame } from "./WindowFrame";
 import { FeatureText } from "./FeatureText";
+import { ScreenUser } from "./ScreenUser";
+import { ScreenAdmin } from "./ScreenAdmin";
+import { ScreenYolo } from "./ScreenYolo";
 import { useStageStore } from "../store/useStageStore";
+import { getLenis } from "../lib/lenis";
 import { Smartphone, ShieldCheck, Cpu } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
+
+// PART A.1: Direction multiplier (1 = content travels UP as user scrolls down, -1 = reversed)
+const DIRECTION = 1;
 
 // Helper to scramble text cleanly in forward and reverse scrub
 const SCRAMBLE_GLYPHS = "01_-.x/~*#";
@@ -62,24 +69,45 @@ export function FeatureStage(): React.JSX.Element {
     return () => mq.removeEventListener("change", onChange);
   }, []);
 
+  // Dynamic coordinate calculator for traveling plate chip (PART C.4)
+  const getPlateTargetCoords = (targetId: string) => {
+    if (typeof document === "undefined") {
+      return { top: 105, left: 30, width: 128, height: 36 };
+    }
+    const container = document.querySelector(`.${styles.screensContainer}`);
+    const target = document.getElementById(targetId);
+    if (!container || !target) {
+      if (targetId === "admin-plate-anchor") return { top: 114, left: 68, width: 92, height: 26 };
+      if (targetId === "yolo-plate-anchor") return { top: 76, left: 155, width: 160, height: 46 };
+      return { top: 105, left: 30, width: 128, height: 36 };
+    }
+    const cRect = container.getBoundingClientRect();
+    const tRect = target.getBoundingClientRect();
+    return {
+      top: tRect.top - cRect.top,
+      left: tRect.left - cRect.left,
+      width: tRect.width || 128,
+      height: tRect.height || 36,
+    };
+  };
+
   // -------------------------------------------------------------------------
   // MASTER TIMELINE SETUP (Single Source of Truth)
   //
   // TIMELINE MATH (total virtual duration = 100):
-  // - 0 to 30:   Step 1 hold (User App) [with intro build-in at 0-6]
+  // - 0 to 30:   Step 1 hold (User App) [entrance build-in at 0-6]
   // - 30 to 45:  Morph 1 to 2 (User App -> Admin Side)
   //              Text morph runs 28.5 to 43.5 (~10% ahead)
-  //              Peak morph at 37.5 (max tilt, color midpoint, background ring peak)
+  //              Peak morph at 37.5 (max parallax travel, tilt, expanding ring)
   // - 45 to 65:  Step 2 hold (Admin Side)
   // - 65 to 80:  Morph 2 to 3 (Admin Side -> YOLOv11 AI)
   //              Text morph runs 63.5 to 78.5 (~10% ahead)
-  //              Peak morph at 72.5 (max tilt, color midpoint, background ring peak)
-  // - 80 to 100: Step 3 hold (YOLOv11 AI)
+  //              Peak morph at 72.5 (max parallax travel, tilt, expanding ring)
+  // - 80 to 97:  Step 3 hold (YOLOv11 AI)
+  // - 97 to 100: Stage exit drift (-4vh)
   //
   // Hold Points (for snapping & tab clicks):
-  // - Step 1: 0.18
-  // - Step 2: 0.55
-  // - Step 3: 0.90
+  // - [0, 0.18, 0.55, 0.90, 1] (Part C.2: endpoints ensure clean exit)
   // -------------------------------------------------------------------------
   useEffect(() => {
     if (reducedMotion || !stageRef.current) return;
@@ -97,26 +125,31 @@ export function FeatureStage(): React.JSX.Element {
           invalidateOnRefresh: true,
           scrub: 1, // smooth scrub response
           snap: {
-            snapTo: [0.18, 0.55, 0.90],
+            snapTo: [0, 0.18, 0.55, 0.90, 1], // Part C.2: clean entry & exit
             duration: { min: 0.25, max: 0.55 },
             ease: "power1.inOut",
           },
           onUpdate: (self) => {
             const p = self.progress;
 
-            // Compute current step, morph progress, and peak factor
+            // Compute current step, morph progress, peak factor, and signed travelY (PART A.5)
             let step: 0 | 1 | 2 = 0;
             let morphProg = 0;
             let peak = 0;
+            let signedTravelY = 0;
             let color = "#5B5BF0";
 
             if (p < 0.30) {
               step = 0;
               color = "#5B5BF0";
+              if (p <= 0.06) {
+                signedTravelY = (1 - p / 0.06) * DIRECTION;
+              }
             } else if (p < 0.45) {
               step = p < 0.375 ? 0 : 1;
               morphProg = (p - 0.30) / 0.15;
               peak = Math.sin(morphProg * Math.PI);
+              signedTravelY = peak * DIRECTION;
               color = interpolateHex("#5B5BF0", "#22C55E", morphProg);
             } else if (p < 0.65) {
               step = 1;
@@ -125,10 +158,14 @@ export function FeatureStage(): React.JSX.Element {
               step = p < 0.725 ? 1 : 2;
               morphProg = (p - 0.65) / 0.15;
               peak = Math.sin(morphProg * Math.PI);
+              signedTravelY = peak * DIRECTION;
               color = interpolateHex("#22C55E", "#F5A623", morphProg);
             } else {
               step = 2;
               color = "#F5A623";
+              if (p >= 0.97) {
+                signedTravelY = -((p - 0.97) / 0.03) * DIRECTION;
+              }
             }
 
             setActiveTab(step);
@@ -138,6 +175,7 @@ export function FeatureStage(): React.JSX.Element {
               currentStep: step,
               morphProgress: morphProg,
               overallProgress: p,
+              travelY: signedTravelY,
               activeColor: color,
               peakMorph: peak,
             });
@@ -162,12 +200,19 @@ export function FeatureStage(): React.JSX.Element {
       });
 
       // =====================================================================
-      // 1. INTRO BUILD-IN (0 to 6)
+      // 1. STAGE ENTRANCE (0 to 6) — PART A.4: Rise from translateY(8vh * DIRECTION)
       // =====================================================================
       tl.fromTo(
         "#mac-window-frame",
-        { opacity: 0.85, scale: 0.98 },
-        { opacity: 1, scale: 1, duration: 6, ease: "power1.out" },
+        { y: 8 * DIRECTION + "vh", opacity: 0.85, scale: 0.98 },
+        { y: 0, opacity: 1, scale: 1, duration: 6, ease: "power1.out" },
+        0
+      );
+
+      tl.fromTo(
+        "#feature-text-col",
+        { y: 8 * DIRECTION + "vh", opacity: 0.85 },
+        { y: 0, opacity: 1, duration: 6, ease: "power1.out" },
         0
       );
 
@@ -175,42 +220,46 @@ export function FeatureStage(): React.JSX.Element {
       // 2. MORPH 1 TO 2 (30 to 45) — Text leads by ~10% (starts at 28.5)
       // =====================================================================
 
-      // --- TEXT MORPH 1 -> 2 (28.5 to 43.5) ---
-      // Counter roll: 01 -> 02
-      tl.to("#counter-roll", { y: "-33.333%", duration: 12, ease: "power2.inOut" }, 28.5);
-      tl.to("#label-name-1", { opacity: 0, y: -16, duration: 6, ease: "power1.in" }, 28.5);
-      tl.to("#label-name-2", { opacity: 1, y: 0, duration: 6, ease: "power1.out" }, 34.5);
+      // --- TEXT COLUMN VERTICAL TRAVEL & LINE REVEALS (PART A.3) ---
+      // Depth parallax: text column travels about 1.0x (-4.3vh * DIRECTION), peaking at 37.5
+      tl.to("#feature-text-col", {
+        y: -4.3 * DIRECTION + "vh",
+        duration: 7.5,
+        ease: "power2.in",
+      }, 28.5);
+      tl.to("#feature-text-col", {
+        y: 0,
+        duration: 7.5,
+        ease: "power2.out",
+      }, 36.0);
 
-      // Headline swap: Student & Faculty Mobile Portal -> Security & Guard Admin Console
+      // Rolling Counter: 01 -> 02
+      tl.to("#counter-roll", { y: -33.333 * DIRECTION + "%", duration: 12, ease: "power2.inOut" }, 28.5);
+      tl.to("#label-name-1", { opacity: 0, y: -40 * DIRECTION, duration: 6, ease: "power1.in" }, 28.5);
+      tl.fromTo("#label-name-2", { opacity: 0, y: 40 * DIRECTION }, { opacity: 1, y: 0, duration: 6, ease: "power1.out" }, 34.5);
+
+      // Headline swap: Words travel a full line distance
       tl.to(["#headline-prefix-1", "#headline-suffix-1"], {
         opacity: 0,
-        y: -24,
+        y: -50 * DIRECTION,
         stagger: 1.5,
         duration: 6,
         ease: "power2.in",
-        onComplete: () => {
-          gsap.set(["#headline-prefix-1", "#headline-suffix-1"], { display: "none" });
-          gsap.set(["#headline-prefix-2", "#headline-suffix-2"], { display: "inline-block" });
-        },
-        onReverseComplete: () => {
-          gsap.set(["#headline-prefix-2", "#headline-suffix-2"], { display: "none" });
-          gsap.set(["#headline-prefix-1", "#headline-suffix-1"], { display: "inline-block" });
-        },
       }, 29);
       tl.fromTo(["#headline-prefix-2", "#headline-suffix-2"],
-        { opacity: 0, y: 24 },
+        { opacity: 0, y: 50 * DIRECTION },
         { opacity: 1, y: 0, stagger: 1.5, duration: 6, ease: "power2.out" },
         35
       );
 
-      // Description slide up & out, new slides in from below
-      tl.to("#desc-1", { opacity: 0, y: "-100%", duration: 7, ease: "power2.in" }, 29);
-      tl.to("#desc-2", { opacity: 1, y: "0%", duration: 7, ease: "power2.out" }, 36);
+      // Description slide up & out full distance, new enters from below
+      tl.to("#desc-1", { opacity: 0, y: -45 * DIRECTION + "px", duration: 7, ease: "power2.in" }, 29);
+      tl.fromTo("#desc-2", { opacity: 0, y: 45 * DIRECTION + "px" }, { opacity: 1, y: "0px", duration: 7, ease: "power2.out" }, 36);
 
       // Checklist items exit & enter staggered
       for (let i = 1; i <= 4; i++) {
-        tl.to(`#check-text-${i}-s1`, { opacity: 0, y: "-100%", duration: 5, ease: "power1.in" }, 29 + i * 1.2);
-        tl.to(`#check-text-${i}-s2`, { opacity: 1, y: "0%", duration: 5, ease: "power1.out" }, 35 + i * 1.2);
+        tl.to(`#check-text-${i}-s1`, { opacity: 0, y: -35 * DIRECTION + "px", duration: 5, ease: "power1.in" }, 29 + i * 1.2);
+        tl.fromTo(`#check-text-${i}-s2`, { opacity: 0, y: 35 * DIRECTION + "px" }, { opacity: 1, y: "0px", duration: 5, ease: "power1.out" }, 35 + i * 1.2);
       }
 
       // Tech tags & Action buttons cross-swap
@@ -219,15 +268,17 @@ export function FeatureStage(): React.JSX.Element {
       tl.to("#action-row-1", { opacity: 0, duration: 5, ease: "power1.in" }, 30);
       tl.to("#action-row-2", { opacity: 1, duration: 5, ease: "power1.out" }, 36);
 
-      // --- WINDOW MORPH 1 -> 2 (30 to 45) ---
-      // Frame 3D Tilt peaking at 37.5
+      // --- WINDOW VERTICAL FILMSTRIP & PARALLAX (PART A.1, A.2) ---
+      // Window frame vertical parallax: travels ~0.7x (-3vh * DIRECTION), peaking at 37.5
       tl.to("#mac-window-frame", {
+        y: -3 * DIRECTION + "vh",
         rotateY: 5.5,
         rotateX: -2.5,
         duration: 7.5,
         ease: "power2.in",
       }, 30);
       tl.to("#mac-window-frame", {
+        y: 0,
         rotateY: 0,
         rotateX: 0,
         duration: 7.5,
@@ -240,6 +291,13 @@ export function FeatureStage(): React.JSX.Element {
         boxShadow: "0 0 0 1px rgba(34, 197, 94, 0.2), 0 24px 64px rgba(0, 0, 0, 0.7), 0 0 80px rgba(34, 197, 94, 0.25)",
         duration: 15,
         ease: "none",
+      }, 30);
+
+      // Filmstrip Track: Screens translateY slides from 0 to -100% (PART A.1)
+      tl.to("#screens-track", {
+        y: -100 * DIRECTION + "%",
+        duration: 15,
+        ease: "power2.inOut",
       }, 30);
 
       // Title-bar text scramble: intelligate_user.app -> admin.guard_station
@@ -256,45 +314,17 @@ export function FeatureStage(): React.JSX.Element {
         },
       }, 30);
 
-      // Screen 1 (User) collapse & clip-path wipe
+      // Screen 1 bar collapse and Screen 2 rows reveal
       tl.to(".user-chart-bar", { scaleY: 0, duration: 8, ease: "power2.in" }, 30);
-      tl.to(userScreenRef.current, {
-        clipPath: "polygon(0 0, 100% 0, 100% 0%, 0 0%)",
-        duration: 12,
-        ease: "power2.inOut",
-        onComplete: () => {
-          if (userScreenRef.current) userScreenRef.current.style.visibility = "hidden";
-        },
-        onReverseComplete: () => {
-          if (userScreenRef.current) userScreenRef.current.style.visibility = "visible";
-        },
-      }, 31);
+      tl.fromTo(".admin-row-2", { opacity: 0, y: 14 * DIRECTION }, { opacity: 1, y: 0, duration: 6, ease: "power1.out" }, 38);
+      tl.fromTo(".admin-row-3", { opacity: 0, y: 14 * DIRECTION }, { opacity: 1, y: 0, duration: 6, ease: "power1.out" }, 40);
 
-      // Screen 2 (Admin) reveal
-      tl.fromTo(
-        adminScreenRef.current,
-        {
-          clipPath: "polygon(0 100%, 100% 100%, 100% 100%, 0 100%)",
-          visibility: "visible",
-        },
-        {
-          clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
-          duration: 12,
-          ease: "power2.inOut",
-        },
-        33
-      );
-
-      // Stagger reveal of Admin table rows 2 and 3
-      tl.fromTo(".admin-row-2", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 6, ease: "power1.out" }, 38);
-      tl.fromTo(".admin-row-3", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 6, ease: "power1.out" }, 40);
-
-      // SHARED ELEMENT MORPH: Traveling plate chip travels from User stat card to Admin row 1!
+      // SHARED ELEMENT MORPH: Dynamic function-based coordinates (PART C.4)
       tl.to(plateRef.current, {
-        top: "114px",
-        left: "68px",
-        width: "92px",
-        height: "26px",
+        top: () => getPlateTargetCoords("admin-plate-anchor").top,
+        left: () => getPlateTargetCoords("admin-plate-anchor").left,
+        width: () => getPlateTargetCoords("admin-plate-anchor").width,
+        height: () => getPlateTargetCoords("admin-plate-anchor").height,
         fontSize: "0.8rem",
         borderColor: "#4ade80",
         color: "#4ade80",
@@ -308,42 +338,46 @@ export function FeatureStage(): React.JSX.Element {
       // 3. MORPH 2 TO 3 (65 to 80) — Text leads by ~10% (starts at 63.5)
       // =====================================================================
 
-      // --- TEXT MORPH 2 -> 3 (63.5 to 78.5) ---
-      // Counter roll: 02 -> 03
-      tl.to("#counter-roll", { y: "-66.666%", duration: 12, ease: "power2.inOut" }, 63.5);
-      tl.to("#label-name-2", { opacity: 0, y: -16, duration: 6, ease: "power1.in" }, 63.5);
-      tl.to("#label-name-3", { opacity: 1, y: 0, duration: 6, ease: "power1.out" }, 69.5);
+      // --- TEXT COLUMN VERTICAL TRAVEL & LINE REVEALS (PART A.3) ---
+      // Depth parallax: text column travels about 1.0x (-4.3vh * DIRECTION), peaking at 72.5
+      tl.to("#feature-text-col", {
+        y: -4.3 * DIRECTION + "vh",
+        duration: 7.5,
+        ease: "power2.in",
+      }, 63.5);
+      tl.to("#feature-text-col", {
+        y: 0,
+        duration: 7.5,
+        ease: "power2.out",
+      }, 71.0);
 
-      // Headline swap: Security & Guard Admin Console -> Python YOLOv11s Plate Recognition
+      // Rolling Counter: 02 -> 03
+      tl.to("#counter-roll", { y: -66.666 * DIRECTION + "%", duration: 12, ease: "power2.inOut" }, 63.5);
+      tl.to("#label-name-2", { opacity: 0, y: -40 * DIRECTION, duration: 6, ease: "power1.in" }, 63.5);
+      tl.fromTo("#label-name-3", { opacity: 0, y: 40 * DIRECTION }, { opacity: 1, y: 0, duration: 6, ease: "power1.out" }, 69.5);
+
+      // Headline swap: Words travel a full line distance
       tl.to(["#headline-prefix-2", "#headline-suffix-2"], {
         opacity: 0,
-        y: -24,
+        y: -50 * DIRECTION,
         stagger: 1.5,
         duration: 6,
         ease: "power2.in",
-        onComplete: () => {
-          gsap.set(["#headline-prefix-2", "#headline-suffix-2"], { display: "none" });
-          gsap.set(["#headline-prefix-3", "#headline-suffix-3"], { display: "inline-block" });
-        },
-        onReverseComplete: () => {
-          gsap.set(["#headline-prefix-3", "#headline-suffix-3"], { display: "none" });
-          gsap.set(["#headline-prefix-2", "#headline-suffix-2"], { display: "inline-block" });
-        },
       }, 64);
       tl.fromTo(["#headline-prefix-3", "#headline-suffix-3"],
-        { opacity: 0, y: 24 },
+        { opacity: 0, y: 50 * DIRECTION },
         { opacity: 1, y: 0, stagger: 1.5, duration: 6, ease: "power2.out" },
         70
       );
 
-      // Description slide up & out, new slides in from below
-      tl.to("#desc-2", { opacity: 0, y: "-100%", duration: 7, ease: "power2.in" }, 64);
-      tl.to("#desc-3", { opacity: 1, y: "0%", duration: 7, ease: "power2.out" }, 71);
+      // Description slide up & out full distance, new enters from below
+      tl.to("#desc-2", { opacity: 0, y: -45 * DIRECTION + "px", duration: 7, ease: "power2.in" }, 64);
+      tl.fromTo("#desc-3", { opacity: 0, y: 45 * DIRECTION + "px" }, { opacity: 1, y: "0px", duration: 7, ease: "power2.out" }, 71);
 
       // Checklist items exit & enter staggered
       for (let i = 1; i <= 4; i++) {
-        tl.to(`#check-text-${i}-s2`, { opacity: 0, y: "-100%", duration: 5, ease: "power1.in" }, 64 + i * 1.2);
-        tl.to(`#check-text-${i}-s3`, { opacity: 1, y: "0%", duration: 5, ease: "power1.out" }, 70 + i * 1.2);
+        tl.to(`#check-text-${i}-s2`, { opacity: 0, y: -35 * DIRECTION + "px", duration: 5, ease: "power1.in" }, 64 + i * 1.2);
+        tl.fromTo(`#check-text-${i}-s3`, { opacity: 0, y: 35 * DIRECTION + "px" }, { opacity: 1, y: "0px", duration: 5, ease: "power1.out" }, 70 + i * 1.2);
       }
 
       // Tech tags & Action buttons cross-swap
@@ -352,15 +386,17 @@ export function FeatureStage(): React.JSX.Element {
       tl.to("#action-row-2", { opacity: 0, duration: 5, ease: "power1.in" }, 65);
       tl.to("#action-row-3", { opacity: 1, duration: 5, ease: "power1.out" }, 71);
 
-      // --- WINDOW MORPH 2 -> 3 (65 to 80) ---
-      // Frame 3D Tilt peaking at 72.5
+      // --- WINDOW VERTICAL FILMSTRIP & PARALLAX (PART A.1, A.2) ---
+      // Window frame vertical parallax: travels ~0.7x (-3vh * DIRECTION), peaking at 72.5
       tl.to("#mac-window-frame", {
+        y: -3 * DIRECTION + "vh",
         rotateY: -5.5,
         rotateX: 2.5,
         duration: 7.5,
         ease: "power2.in",
       }, 65);
       tl.to("#mac-window-frame", {
+        y: 0,
         rotateY: 0,
         rotateX: 0,
         duration: 7.5,
@@ -373,6 +409,13 @@ export function FeatureStage(): React.JSX.Element {
         boxShadow: "0 0 0 1px rgba(245, 166, 35, 0.2), 0 24px 64px rgba(0, 0, 0, 0.7), 0 0 80px rgba(245, 166, 35, 0.25)",
         duration: 15,
         ease: "none",
+      }, 65);
+
+      // Filmstrip Track: Screens translateY slides from -100% to -200% (PART A.1)
+      tl.to("#screens-track", {
+        y: -200 * DIRECTION + "%",
+        duration: 15,
+        ease: "power2.inOut",
       }, 65);
 
       // Title-bar text scramble: admin.guard_station -> yolov11_alpr_detect.py
@@ -389,34 +432,8 @@ export function FeatureStage(): React.JSX.Element {
         },
       }, 65);
 
-      // Screen 2 (Admin) table dissolve & wipe out
-      tl.to(".admin-table-row", { opacity: 0, y: -10, duration: 6, ease: "power1.in" }, 65);
-      tl.to(adminScreenRef.current, {
-        clipPath: "polygon(0 0, 100% 0, 100% 0%, 0 0%)",
-        duration: 12,
-        ease: "power2.inOut",
-        onComplete: () => {
-          if (adminScreenRef.current) adminScreenRef.current.style.visibility = "hidden";
-        },
-        onReverseComplete: () => {
-          if (adminScreenRef.current) adminScreenRef.current.style.visibility = "visible";
-        },
-      }, 66);
-
-      // Screen 3 (YOLO) reveal
-      tl.fromTo(
-        yoloScreenRef.current,
-        {
-          clipPath: "polygon(0 100%, 100% 100%, 100% 100%, 0 100%)",
-          visibility: "visible",
-        },
-        {
-          clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
-          duration: 12,
-          ease: "power2.inOut",
-        },
-        68
-      );
+      // Admin table rows dissolve
+      tl.to(".admin-table-row", { opacity: 0, y: -10 * DIRECTION, duration: 6, ease: "power1.in" }, 65);
 
       // Laser scan line sweeps top to bottom
       tl.fromTo("#yolo-laser-line",
@@ -437,12 +454,12 @@ export function FeatureStage(): React.JSX.Element {
       // "DETECTED: LGJ 910" is the last line to appear
       tl.fromTo(".yolo-term-5", { opacity: 0, scale: 0.95 }, { opacity: 1, scale: 1, duration: 3, ease: "power2.out" }, 78.5);
 
-      // SHARED ELEMENT MORPH: Traveling plate chip expands into YOLO detection box!
+      // SHARED ELEMENT MORPH: Dynamic function-based coordinates (PART C.4)
       tl.to(plateRef.current, {
-        top: "76px",
-        left: "155px",
-        width: "160px",
-        height: "46px",
+        top: () => getPlateTargetCoords("yolo-plate-anchor").top,
+        left: () => getPlateTargetCoords("yolo-plate-anchor").left,
+        width: () => getPlateTargetCoords("yolo-plate-anchor").width,
+        height: () => getPlateTargetCoords("yolo-plate-anchor").height,
         fontSize: "0.95rem",
         borderColor: "#f5a623",
         color: "#f5a623",
@@ -459,6 +476,21 @@ export function FeatureStage(): React.JSX.Element {
         duration: 4,
       }, 74);
 
+      // =====================================================================
+      // 4. STAGE EXIT DRIFT (97 to 100) — PART A.4: Drift both up ~4vh * DIRECTION
+      // =====================================================================
+      tl.to("#mac-window-frame", {
+        y: -4 * DIRECTION + "vh",
+        duration: 3,
+        ease: "power1.in",
+      }, 97);
+
+      tl.to("#feature-text-col", {
+        y: -4 * DIRECTION + "vh",
+        duration: 3,
+        ease: "power1.in",
+      }, 97);
+
       // Refresh ScrollTrigger so pinning offsets are precisely calculated
       ScrollTrigger.refresh();
     }, stageRef);
@@ -473,33 +505,93 @@ export function FeatureStage(): React.JSX.Element {
     };
   }, [reducedMotion]);
 
-  // Click on tab scrolls smoothly to that step's hold point
+  // Click on tab scrolls smoothly to that step's hold point via Lenis (PART C.1)
   const handleTabClick = (stepIndex: number) => {
     const holdPoints = [0.18, 0.55, 0.90];
     const trigger = ScrollTrigger.getById("feature-stage-trigger");
     if (!trigger) return;
 
     const targetScroll = trigger.start + holdPoints[stepIndex] * (trigger.end - trigger.start);
-    window.scrollTo({
-      top: targetScroll,
-      behavior: "smooth",
-    });
+    const lenis = getLenis();
+    if (lenis) {
+      lenis.scrollTo(targetScroll);
+    } else {
+      window.scrollTo({
+        top: targetScroll,
+        behavior: "smooth",
+      });
+    }
   };
 
   // -------------------------------------------------------------------------
-  // Fallback for prefers-reduced-motion
+  // Fallback for prefers-reduced-motion (PART C.5: All 3 stories stacked vertically)
   // -------------------------------------------------------------------------
   if (reducedMotion) {
     return (
       <div className={styles.reducedMotionContainer} id="feature-stage-reduced">
+        {/* Story 1 */}
         <div className={styles.reducedMotionStep}>
           <FeatureText />
-          <WindowFrame
-            userScreenRef={userScreenRef}
-            adminScreenRef={adminScreenRef}
-            yoloScreenRef={yoloScreenRef}
-            plateRef={plateRef}
-          />
+          <div className={styles.windowFrameWrap}>
+            <div className={styles.windowFrame}>
+              <div className={styles.windowTopbar}>
+                <span className={styles.titleFilename}>intelligate_user.app</span>
+              </div>
+              <div className={styles.screensContainer} style={{ height: "auto" }}>
+                <ScreenUser isVisible={true} />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Story 2 */}
+        <div className={styles.reducedMotionStep}>
+          <div className={styles.textColumn}>
+            <div className={styles.labelRow}>
+              <span>02 — ADMIN CONTROL</span>
+            </div>
+            <h2 className={styles.headlineWrap}>
+              Security &amp; Guard <span className={styles.gradientWord}>Admin Console</span>
+            </h2>
+            <p className={styles.descLine} style={{ position: "static", marginBottom: 20 }}>
+              Full operational oversight for university gate security guards. Monitors campus occupancy, logs live plate scans with microsecond timestamps, and provides instant manual servo barrier overrides.
+            </p>
+          </div>
+          <div className={styles.windowFrameWrap}>
+            <div className={styles.windowFrame} style={{ borderColor: "#22c55e" }}>
+              <div className={styles.windowTopbar}>
+                <span className={styles.titleFilename}>admin.guard_station</span>
+              </div>
+              <div className={styles.screensContainer} style={{ height: "auto" }}>
+                <ScreenAdmin isVisible={true} />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Story 3 */}
+        <div className={styles.reducedMotionStep}>
+          <div className={styles.textColumn}>
+            <div className={styles.labelRow}>
+              <span>03 — AI VISION ENGINE</span>
+            </div>
+            <h2 className={styles.headlineWrap}>
+              Python YOLOv11s <span className={styles.gradientWord}>Plate Recognition</span>
+            </h2>
+            <p className={styles.descLine} style={{ position: "static", marginBottom: 20 }}>
+              State-of-the-art computer vision pipeline specifically trained on Philippine standard license plates. Delivers high-confidence localization, robust character transcription via PaddleOCR, and microsecond barrier relay trigger.
+            </p>
+          </div>
+          <div className={styles.windowFrameWrap}>
+            <div className={styles.windowFrame} style={{ borderColor: "#f5a623" }}>
+              <div className={styles.windowTopbar}>
+                <span className={styles.titleFilename}>yolov11_alpr_detect.py</span>
+              </div>
+              <div className={styles.screensContainer} style={{ height: "auto" }}>
+                <ScreenYolo isVisible={true} />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -548,8 +640,10 @@ export function FeatureStage(): React.JSX.Element {
 
         {/* Main Stage: Exactly ONE Text Block & ONE Window Card */}
         <div className={styles.stageGrid}>
-          {/* Left Column: Persistent Text Block */}
-          <FeatureText />
+          {/* Left Column: Persistent Text Block with ID for vertical travel */}
+          <div id="feature-text-col" style={{ width: "100%", willChange: "transform" }}>
+            <FeatureText />
+          </div>
 
           {/* Right Column: Persistent macOS-Style Window Frame */}
           <WindowFrame

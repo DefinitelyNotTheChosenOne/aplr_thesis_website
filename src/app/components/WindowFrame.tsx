@@ -10,9 +10,9 @@ import { ScreenYolo } from "./ScreenYolo";
 import { useStageStore } from "../store/useStageStore";
 
 const REAL_SCREENSHOTS = [
-  "/f06fc00e-c7f5-49c9-98db-1e298508c365.jpg", // Step 0: User App
-  "/d0375754-58f3-43e0-b816-377fd0b9132f.jpg", // Step 1: Admin Guard Station
-  "/yolov11s.png",                             // Step 2: YOLOv11 Vision Feed
+  "/user.jpg",     // Step 0: User App
+  "/admin.jpg",    // Step 1: Admin Guard Station
+  "/yolov11s.png", // Step 2: YOLOv11 Vision Feed
 ];
 
 export interface WindowFrameProps {
@@ -44,7 +44,7 @@ export const WindowFrame = forwardRef<HTMLDivElement, WindowFrameProps>(
               intelligate_user.app
             </div>
 
-            {/* Real Screenshot vs Interactive HTML Toggle */}
+            {/* Real Screenshot Toggle Badge */}
             <button
               type="button"
               className={styles.realScreenshotBadge}
@@ -56,19 +56,28 @@ export const WindowFrame = forwardRef<HTMLDivElement, WindowFrameProps>(
             </button>
           </div>
 
-          {/* Screens Container: 3 HTML Screens Stacked In Place */}
+          {/* Screens Container with Overflow Hidden */}
           <div className={styles.screensContainer}>
-            {/* The single traveling plate chip that morphs across all 3 screens */}
+            {/* Vertical Filmstrip Track: Screens never unmount */}
+            <div id="screens-track" className={styles.screensTrack}>
+              <div className={styles.screenSlide}>
+                <ScreenUser ref={userScreenRef} />
+              </div>
+              <div className={styles.screenSlide}>
+                <ScreenAdmin ref={adminScreenRef} />
+              </div>
+              <div className={styles.screenSlide}>
+                <ScreenYolo ref={yoloScreenRef} />
+              </div>
+            </div>
+
+            {/* The single persistent traveling plate chip (hidden only when Real Photo is overlaid) */}
             <div
               ref={plateRef}
               id="traveling-plate-chip"
               className={styles.travelingPlateChip}
               style={{
-                top: "105px",
-                left: "30px",
-                width: "128px",
-                height: "36px",
-                fontSize: "1.1rem",
+                display: showRealScreenshot ? "none" : "flex",
               }}
             >
               <span id="plate-text-inner">LGJ 910</span>
@@ -88,31 +97,22 @@ export const WindowFrame = forwardRef<HTMLDivElement, WindowFrameProps>(
               </span>
             </div>
 
-            {showRealScreenshot ? (
-              <div
-                style={{
-                  position: "relative",
-                  width: "100%",
-                  height: "380px",
-                  borderRadius: "12px",
-                  overflow: "hidden",
-                }}
-              >
-                <Image
-                  src={REAL_SCREENSHOTS[currentStep]}
-                  alt="Real Capstone Screenshot"
-                  fill
-                  style={{ objectFit: "contain" }}
-                  priority
-                />
-              </div>
-            ) : (
-              <>
-                <ScreenUser ref={userScreenRef} isVisible={true} />
-                <ScreenAdmin ref={adminScreenRef} isVisible={false} />
-                <ScreenYolo ref={yoloScreenRef} isVisible={false} />
-              </>
-            )}
+            {/* Real Screenshot Overlay: Positioned absolutely on top so screens stay mounted */}
+            <div
+              className={styles.realScreenshotOverlay}
+              style={{
+                opacity: showRealScreenshot ? 1 : 0,
+                pointerEvents: showRealScreenshot ? "auto" : "none",
+              }}
+            >
+              <Image
+                src={REAL_SCREENSHOTS[currentStep]}
+                alt="Real Capstone Screenshot"
+                fill
+                style={{ objectFit: "contain" }}
+                priority
+              />
+            </div>
           </div>
         </div>
       </div>

@@ -31,15 +31,15 @@ export function FeatureText(): React.JSX.Element {
       {/* 2. Headline with Masked Word Reveals (Gradient on Suffix) */}
       <h2 className={styles.headlineWrap}>
         <div className={styles.wordMask}>
-          <span id="headline-prefix-1" style={{ display: "inline-block" }}>Student &amp; Faculty&nbsp;</span>
-          <span id="headline-prefix-2" style={{ display: "none" }}>Security &amp; Guard&nbsp;</span>
-          <span id="headline-prefix-3" style={{ display: "none" }}>Python YOLOv11s&nbsp;</span>
+          <span id="headline-prefix-1" style={{ display: "inline-block", position: "relative" }}>Student &amp; Faculty&nbsp;</span>
+          <span id="headline-prefix-2" style={{ opacity: 0, position: "absolute", top: 0, left: 0, whiteSpace: "nowrap" }}>Security &amp; Guard&nbsp;</span>
+          <span id="headline-prefix-3" style={{ opacity: 0, position: "absolute", top: 0, left: 0, whiteSpace: "nowrap" }}>Python YOLOv11s&nbsp;</span>
         </div>
         <div className={styles.wordMask}>
-          <span className={styles.gradientWord}>
-            <span id="headline-suffix-1" style={{ display: "inline-block" }}>Mobile Portal</span>
-            <span id="headline-suffix-2" style={{ display: "none" }}>Admin Console</span>
-            <span id="headline-suffix-3" style={{ display: "none" }}>Plate Recognition</span>
+          <span className={styles.gradientWord} style={{ position: "relative", display: "inline-block" }}>
+            <span id="headline-suffix-1" style={{ display: "inline-block", position: "relative" }}>Mobile Portal</span>
+            <span id="headline-suffix-2" style={{ opacity: 0, position: "absolute", top: 0, left: 0, whiteSpace: "nowrap" }}>Admin Console</span>
+            <span id="headline-suffix-3" style={{ opacity: 0, position: "absolute", top: 0, left: 0, whiteSpace: "nowrap" }}>Plate Recognition</span>
           </span>
         </div>
       </h2>

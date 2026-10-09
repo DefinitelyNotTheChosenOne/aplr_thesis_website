@@ -1,24 +1,14 @@
 /* =========================================================================
-   ThreeScrollShowcase Module Styles
-   IntelliGate 3D Scroll-Driven Interactive Showcase
+   INTELLIGATE 3D WEBGL SCROLL SHOWCASE (Three.js + R3F + Drei)
+   Hardware-Accelerated Scrollytelling Experience
+   Base Color: #05060D | Accents: #5B5BF0, #22C55E, #F5A623
    ========================================================================= */
 
-.showcaseRoot {
+.showcaseRunway {
   position: relative;
   width: 100%;
-  background: #040711;
-  color: #ffffff;
-  overflow: visible;
-}
-
-/* -------------------------------------------------------------------------
-   Pinned Sticky Viewport Container
-   Height of the overall container determines the scroll runway length
-   ------------------------------------------------------------------------- */
-.scrollSectionTrack {
-  position: relative;
-  width: 100%;
-  height: 400vh; /* 4 steps x 100vh of smooth scroll runway */
+  height: 350vh;
+  background: #05060d;
 }
 
 .stickyViewport {
@@ -26,69 +16,32 @@
   top: 0;
   width: 100%;
   height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  min-height: 100vh;
+  background: #05060d;
   overflow: hidden;
-  z-index: 10;
+  user-select: none;
 }
 
-/* Background 3D WebGL Canvas */
-.canvasContainer {
+.canvasWrapper {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   z-index: 1;
-  cursor: grab;
-  touch-action: none;
-}
-
-.canvasContainer:active {
-  cursor: grabbing;
-}
-
-.threeCanvas {
-  width: 100% !important;
-  height: 100% !important;
-  display: block;
-}
-
-/* Ambient lighting behind canvas */
-.ambientBackgroundGlow {
-  position: absolute;
-  inset: 0;
-  background: 
-    radial-gradient(circle at 65% 50%, rgba(26, 43, 166, 0.22) 0%, transparent 60%),
-    radial-gradient(circle at 30% 70%, rgba(245, 166, 35, 0.08) 0%, transparent 50%),
-    radial-gradient(circle at 50% 0%, rgba(13, 27, 122, 0.3) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-.gridOverlay {
-  position: absolute;
-  inset: 0;
-  background-image: 
-    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-  background-size: 60px 60px;
-  pointer-events: none;
-  z-index: 0;
-  mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.8) 0%, transparent 80%);
 }
 
 /* -------------------------------------------------------------------------
-   HUD: Stage Indicator & Progress Bar
+   Top HUD Bar (Persistent overlay above canvas)
    ------------------------------------------------------------------------- */
 .hudTopBar {
   position: absolute;
-  top: 1.5rem;
-  left: 2rem;
-  right: 2rem;
+  top: 24px;
+  left: 0;
+  right: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 0 4vw;
   z-index: 20;
   pointer-events: none;
 }
@@ -97,417 +50,468 @@
   pointer-events: auto;
   display: inline-flex;
   align-items: center;
-  gap: 0.6rem;
-  padding: 0.45rem 1rem;
+  gap: 8px;
+  padding: 6px 14px;
   border-radius: 9999px;
-  background: rgba(10, 16, 42, 0.65);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(245, 166, 35, 0.3);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-  font-size: 0.8rem;
+  background: rgba(13, 17, 34, 0.75);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-family: monospace;
+  font-size: 0.78rem;
   font-weight: 700;
-  color: #f5a623;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: #e2e8f0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
 .pulseBeacon {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #f5a623;
-  box-shadow: 0 0 10px #f5a623;
-  animation: beaconPulse 2s infinite ease-in-out;
+  background: #22c55e;
+  box-shadow: 0 0 10px #22c55e;
+  animation: beaconPulse 2s infinite;
 }
 
 @keyframes beaconPulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(0.8); }
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.5; }
 }
 
-.hudStepNav {
+.hudStagePill {
   pointer-events: auto;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  background: rgba(10, 16, 42, 0.6);
-  backdrop-filter: blur(16px);
-  padding: 0.35rem 0.6rem;
+  gap: 4px;
+  background: rgba(13, 17, 34, 0.75);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 4px 6px;
   border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
 }
 
-.stepNavBtn {
-  background: transparent;
-  border: none;
-  color: #94a3b8;
-  padding: 0.35rem 0.85rem;
+.hudStageItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
   border-radius: 9999px;
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   font-weight: 600;
+  color: #94a3b8;
+  background: transparent;
+  border: 1px solid transparent;
   cursor: pointer;
   transition: all 0.25s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
+  white-space: nowrap;
 }
 
-.stepNavBtn:hover {
+.hudStageItem:hover {
   color: #ffffff;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.05);
 }
 
-.stepNavBtnActive {
-  background: linear-gradient(135deg, #1a2ba6, #2a3fb8);
+.hudStageItemActive {
+  background: linear-gradient(135deg, rgba(91, 91, 240, 0.35), rgba(91, 91, 240, 0.15));
+  border: 1px solid rgba(91, 91, 240, 0.6);
   color: #ffffff;
-  box-shadow: 0 2px 10px rgba(26, 43, 166, 0.4);
+  box-shadow: 0 0 14px rgba(91, 91, 240, 0.4);
 }
 
 /* -------------------------------------------------------------------------
-   HUD: Bottom Floating Controls
+   Pinned 2-Column Scrollytelling Overlay inside <Scroll html>
+   - Stays pinned at (0, 0) by counteracting Drei's ScrollHtml transform
+   - Left column takes up 50% width and holds the text descriptions
+   - Right column provides empty space for the traveling 3D UI container
    ------------------------------------------------------------------------- */
-.hudControlsBottom {
-  position: absolute;
-  bottom: 1.5rem;
-  left: 2rem;
-  right: 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  z-index: 20;
-  pointer-events: none;
-}
-
-.hudControlGroup {
-  pointer-events: auto;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: rgba(10, 16, 42, 0.7);
-  backdrop-filter: blur(16px);
-  padding: 0.35rem 0.6rem;
-  border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-}
-
-.controlBtn {
-  background: transparent;
-  border: none;
-  color: #cbd5e1;
-  padding: 0.4rem 0.85rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-}
-
-.controlBtn:hover {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.controlBtnActive {
-  background: rgba(245, 166, 35, 0.15);
-  border: 1px solid rgba(245, 166, 35, 0.4);
-  color: #ffc84a;
-}
-
-.dragTip {
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-  font-size: 0.72rem;
-  color: #64748b;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 0 0.5rem;
-}
-
-/* -------------------------------------------------------------------------
-   Dynamic Content Cards (Left Side Floating Over 3D Scene)
-   ------------------------------------------------------------------------- */
-.stageContentOverlay {
+.scrollyOverlay {
   position: absolute;
   top: 0;
   left: 0;
+  width: 100vw;
+  height: 100vh;
+  box-sizing: border-box;
+  pointer-events: none;
+  z-index: 10;
+  will-change: transform;
+}
+
+.twoColumnLayout {
+  position: relative;
   width: 100%;
   height: 100%;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 0 5vw;
   pointer-events: none;
-  z-index: 15;
-  display: flex;
-  align-items: center;
-  padding: 0 3rem;
 }
 
-.stageCardWrapper {
-  max-width: 520px;
-  width: 100%;
-  pointer-events: auto;
-  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.stageGlassCard {
-  background: rgba(10, 16, 38, 0.72);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 24px;
-  padding: 2.25rem;
-  box-shadow: 
-    0 24px 60px rgba(0, 0, 0, 0.6),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+.leftTextColumn {
   position: relative;
-  overflow: hidden;
-}
-
-.cardGlowBorder {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, #f5a623, #1a2ba6, transparent);
-}
-
-.stageTagRow {
+  width: 50%;
+  max-width: 580px;
+  height: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1.15rem;
+  pointer-events: none;
 }
 
-.stageIndexBadge {
-  display: inline-flex;
+.rightCanvasColumn {
+  position: relative;
+  width: 50%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Vertical centering slot for each text stage */
+.textSectionSlot {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  max-width: 580px;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+/* Motion target for frame-synchronized opacity and vertical parallax */
+.textSectionMotion {
+  width: 100%;
+  will-change: transform, opacity;
+  pointer-events: none;
+  transition: none; /* Driven directly by useFrame RAF loop for zero lag */
+}
+
+/* Glassmorphism Card Container */
+.glassCard {
+  background: rgba(8, 11, 26, 0.72);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 32px 34px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), 0 0 35px rgba(91, 91, 240, 0.08);
+  pointer-events: auto;
+}
+
+.stepHeaderRow {
+  display: flex;
   align-items: center;
-  gap: 0.4rem;
-  font-size: 0.75rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #f5a623;
-  background: rgba(245, 166, 35, 0.12);
-  border: 1px solid rgba(245, 166, 35, 0.25);
-  padding: 0.25rem 0.65rem;
-  border-radius: 9999px;
+  gap: 12px;
+  margin-bottom: 14px;
 }
 
-.stageTechBadge {
-  font-size: 0.72rem;
-  color: #94a3b8;
+.stepBadge {
   font-family: monospace;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(91, 91, 240, 0.15);
+  border: 1px solid rgba(91, 91, 240, 0.4);
+  color: #818cf8;
+}
+
+.stepBadgeGreen {
+  background: rgba(34, 197, 94, 0.15);
+  border-color: rgba(34, 197, 94, 0.4);
+  color: #4ade80;
+}
+
+.stepBadgeGold {
+  background: rgba(245, 166, 35, 0.15);
+  border-color: rgba(245, 166, 35, 0.4);
+  color: #fbbf24;
+}
+
+.stepCategory {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #94a3b8;
 }
 
 .stageTitle {
-  font-size: 2rem;
+  font-size: clamp(2rem, 3.2vw, 3rem);
   font-weight: 800;
   line-height: 1.15;
+  letter-spacing: -0.025em;
   color: #ffffff;
-  margin-bottom: 0.85rem;
-  letter-spacing: -0.02em;
+  margin-bottom: 14px;
 }
 
-.stageTitleHighlight {
-  background: linear-gradient(135deg, #ffffff 40%, #f5a623 100%);
+.gradientTextPurple {
+  background: linear-gradient(135deg, #a78bfa 0%, #818cf8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradientTextGreen {
+  background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradientTextGold {
+  background: linear-gradient(135deg, #fbbf24 0%, #f5a623 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .stageDescription {
-  font-size: 0.95rem;
-  line-height: 1.6;
-  color: #cbd5e1;
-  margin-bottom: 1.5rem;
+  font-size: 0.98rem;
+  color: #94a3b8;
+  line-height: 1.65;
+  font-weight: 300;
+  margin-bottom: 22px;
 }
 
 .featureList {
   display: flex;
   flex-direction: column;
-  gap: 0.65rem;
-  margin-bottom: 1.75rem;
+  gap: 10px;
+  margin-bottom: 24px;
 }
 
 .featureItem {
   display: flex;
   align-items: flex-start;
-  gap: 0.65rem;
-  font-size: 0.85rem;
-  color: #e2e8f0;
+  gap: 10px;
+  font-size: 0.88rem;
+  color: #cbd5e1;
   line-height: 1.45;
 }
 
-.featureIconWrap {
-  flex-shrink: 0;
-  margin-top: 0.15rem;
-  color: #f5a623;
+.featureIcon {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
 }
 
-/* Interactive Action Buttons inside Stage Card */
-.interactiveActionRow {
+.featureIconPurple {
+  background: rgba(91, 91, 240, 0.15);
+  border: 1px solid rgba(91, 91, 240, 0.35);
+  color: #818cf8;
+}
+
+.featureIconGreen {
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.35);
+  color: #4ade80;
+}
+
+.featureIconGold {
+  background: rgba(245, 166, 35, 0.15);
+  border: 1px solid rgba(245, 166, 35, 0.35);
+  color: #fbbf24;
+}
+
+.techTagRow {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 0.75rem;
-  padding-top: 1.25rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  gap: 7px;
+  margin-bottom: 24px;
 }
 
-.actionButtonPrimary {
-  background: linear-gradient(135deg, #f5a623 0%, #e09315 100%);
-  color: #060914;
-  font-weight: 700;
-  font-size: 0.82rem;
-  padding: 0.65rem 1.25rem;
-  border-radius: 9999px;
-  border: none;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: all 0.25s ease;
-  box-shadow: 0 4px 15px rgba(245, 166, 35, 0.3);
-}
-
-.actionButtonPrimary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(245, 166, 35, 0.45);
-}
-
-.actionButtonSecondary {
-  background: rgba(255, 255, 255, 0.06);
-  color: #ffffff;
+.techTag {
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 0.74rem;
+  font-family: monospace;
   font-weight: 600;
-  font-size: 0.82rem;
-  padding: 0.65rem 1.15rem;
-  border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
 }
 
-.actionButtonSecondary:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.3);
-}
-
-/* Floating interactive HUD toast/status alert */
-.simulatedToast {
-  margin-top: 0.85rem;
-  padding: 0.6rem 0.85rem;
-  border-radius: 12px;
-  background: rgba(13, 185, 129, 0.12);
-  border: 1px solid rgba(16, 185, 129, 0.35);
-  color: #34d399;
-  font-size: 0.8rem;
+.actionButtonRow {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  animation: toastFadeIn 0.3s ease;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
-@keyframes toastFadeIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
+.btnPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: linear-gradient(135deg, #5b5bf0, #4338ca);
+  color: #ffffff;
+  border: 1px solid rgba(91, 91, 240, 0.5);
+  box-shadow: 0 4px 18px rgba(91, 91, 240, 0.35);
+  transition: all 0.25s ease;
+}
+
+.btnPrimary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(91, 91, 240, 0.5);
+}
+
+.btnPrimaryGreen {
+  background: linear-gradient(135deg, #10b981, #059669);
+  border-color: rgba(16, 185, 129, 0.45);
+  box-shadow: 0 4px 18px rgba(16, 185, 129, 0.35);
+}
+
+.btnPrimaryGold {
+  background: linear-gradient(135deg, #f5a623, #d97706);
+  border-color: rgba(245, 166, 35, 0.5);
+  color: #000000;
+  box-shadow: 0 4px 18px rgba(245, 166, 35, 0.35);
+}
+
+.btnSecondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.04);
+  color: #cbd5e1;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: all 0.25s ease;
+}
+
+.btnSecondary:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.25);
 }
 
 /* -------------------------------------------------------------------------
-   Scroll Progress Track Bar (Right Side Vertical Line)
+   Bottom Viewport Controls / Indicator HUD
    ------------------------------------------------------------------------- */
-.verticalProgressRail {
+.hudBottomBar {
   position: absolute;
-  right: 2rem;
-  top: 50%;
-  transform: translateY(-50%);
-  height: 200px;
-  width: 3px;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 9999px;
-  z-index: 20;
+  bottom: 24px;
+  left: 0;
+  right: 0;
   display: flex;
-  flex-direction: column;
   justify-content: space-between;
   align-items: center;
+  padding: 0 4vw;
+  z-index: 20;
+  pointer-events: none;
 }
 
-.verticalProgressBar {
-  position: absolute;
-  top: 0;
-  width: 100%;
-  background: linear-gradient(to bottom, #1a2ba6, #f5a623);
-  border-radius: 9999px;
-  transition: height 0.1s linear;
+.scrollHint {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+  color: #64748b;
+  font-family: monospace;
 }
 
-.railDot {
-  width: 9px;
-  height: 9px;
+.scrollHintDot {
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  background: #1e293b;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  position: relative;
-  z-index: 2;
-  cursor: pointer;
-  transition: all 0.25s ease;
+  background: #f5a623;
+  animation: beaconPulse 1.6s infinite;
 }
 
-.railDotActive {
-  background: #f5a623;
-  border-color: #ffffff;
-  transform: scale(1.4);
-  box-shadow: 0 0 12px #f5a623;
+.hardwarePill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  color: #4ade80;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-family: monospace;
+  font-weight: 600;
 }
 
 /* -------------------------------------------------------------------------
-   Responsive adjustments
+   Responsive Media Queries
    ------------------------------------------------------------------------- */
-@media (max-width: 1024px) {
-  .stageCardWrapper {
-    max-width: 440px;
+@media (max-width: 968px) {
+  .twoColumnLayout {
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 16px 16px 74px;
   }
+
+  .leftTextColumn {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    position: static;
+  }
+
+  .rightCanvasColumn {
+    display: none;
+  }
+
+  .textSectionSlot {
+    position: absolute;
+    bottom: 74px;
+    top: auto;
+    left: 16px;
+    right: 16px;
+    width: auto;
+    max-width: calc(100% - 32px);
+    transform: none;
+  }
+
+  .glassCard {
+    padding: 18px 20px;
+  }
+
   .stageTitle {
     font-size: 1.65rem;
+    margin-bottom: 10px;
+  }
+
+  .stageDescription {
+    font-size: 0.85rem;
+    margin-bottom: 12px;
+  }
+
+  .featureList {
+    display: none;
+  }
+
+  .techTagRow {
+    margin-bottom: 14px;
+  }
+
+  .hudStagePill {
+    display: none;
   }
 }
 
-@media (max-width: 768px) {
-  .stageContentOverlay {
-    padding: 0 1.25rem;
-    align-items: flex-end;
-    bottom: 4.5rem;
+@keyframes laserSweep {
+  0% {
+    top: 15%;
+    opacity: 0.8;
   }
-  .stageCardWrapper {
-    max-width: 100%;
+  50% {
+    opacity: 1;
   }
-  .stageGlassCard {
-    padding: 1.4rem;
-    border-radius: 18px;
-  }
-  .stageTitle {
-    font-size: 1.35rem;
-  }
-  .stageDescription {
-    font-size: 0.85rem;
-    margin-bottom: 1rem;
-  }
-  .hudTopBar {
-    left: 1rem;
-    right: 1rem;
-    top: 1rem;
-  }
-  .hudControlsBottom {
-    left: 1rem;
-    right: 1rem;
-    bottom: 1rem;
-  }
-  .verticalProgressRail {
-    display: none;
+  100% {
+    top: 85%;
+    opacity: 0.8;
   }
 }
