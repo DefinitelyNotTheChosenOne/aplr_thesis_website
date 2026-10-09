@@ -1,1576 +1,962 @@
-/* Page Unified Canvas */
-.pageContainer {
+/* =========================================================================
+   IntelliGate Pinned Single-Card Scroll Showcase Styles
+   Smooth morphing card and description connected to 3D background
+   ========================================================================= */
+
+.mainWrapper {
   position: relative;
   width: 100%;
-  min-height: 100vh;
-  background-color: #060914;
-  overflow-x: hidden;
-}
-
-/* Hero Section */
-.heroSection {
-  position: relative;
-  padding: 1.5rem 1.5rem 6rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: radial-gradient(circle at 75% 20%, rgba(26, 43, 166, 0.28) 0%, transparent 55%),
-              radial-gradient(circle at 20% 25%, rgba(13, 27, 122, 0.16) 0%, transparent 45%);
-}
-
-/* Smooth Gradient Fade at the Bottom of Hero Section */
-.heroTransitionGradient {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 160px;
-  background: linear-gradient(to bottom, rgba(6, 9, 20, 0) 0%, #060914 100%);
-  pointer-events: none;
+  background: transparent;
+  color: #ffffff;
   z-index: 5;
 }
 
-/* Subtle, Soft Ambient Lighting (No Heavy Overglow) */
-.ambientOrb1 {
-  position: absolute;
-  top: 8%;
-  right: 12%;
-  width: 460px;
-  height: 460px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(26, 43, 166, 0.2) 0%, transparent 65%);
-  filter: blur(70px);
-  pointer-events: none;
+/* Fixed Three.js WebGL Canvas */
+.threeCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   z-index: 1;
-}
-
-.ambientRing {
-  position: absolute;
-  top: 18%;
-  right: 4%;
-  width: 540px;
-  height: 540px;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.05);
   pointer-events: none;
-  z-index: 1;
 }
 
-.ambientRing2 {
-  position: absolute;
-  top: 12%;
-  right: 0%;
-  width: 680px;
-  height: 680px;
-  border-radius: 50%;
-  border: 1px dashed rgba(245, 166, 35, 0.08);
-  pointer-events: none;
-  z-index: 1;
+/* Top Progress Bar */
+.progressBar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #1a2ba6, #6366f1, #f5a623);
+  z-index: 1000;
+  transition: width 0.1s linear;
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.6);
 }
 
-/* Navigation Bar */
-.navbar {
-  position: sticky;
-  top: 1rem;
-  z-index: 50;
-  width: 100%;
-  max-width: 1200px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.85rem 1.75rem;
-  margin-bottom: 3.5rem;
-  background: rgba(10, 16, 42, 0.45);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 9999px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-}
-
-.brandLogo {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-family: var(--font-heading);
-  font-weight: 800;
-  font-size: 1.25rem;
-  letter-spacing: -0.03em;
-  color: #FFFFFF;
-}
-
-.brandIconWrapper {
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #1A2BA6, #0D1B7A);
-  border: 1px solid rgba(245, 166, 35, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-gold);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
-}
-
-.brandText span {
-  color: var(--color-gold);
-}
-
-.navLinks {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-  list-style: none;
-}
-
-.navLink {
-  color: var(--color-text-secondary);
-  font-size: 0.9rem;
-  font-weight: 500;
-  transition: color 0.2s ease;
-}
-
-.navLink:hover {
-  color: #FFFFFF;
-}
-
-.navCta {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-/* Hero Content Grid */
-.heroContent {
-  position: relative;
-  z-index: 10;
-  width: 100%;
-  max-width: 1200px;
-  display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
-  align-items: center;
-  gap: 3.5rem;
-  padding: 1.5rem 0 2rem;
-}
-
-.heroLeft {
+/* -------------------------------------------------------------------------
+   1. HERO SECTION (100vh)
+   ------------------------------------------------------------------------- */
+.heroSection {
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 1.5rem;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+  padding: 40px 24px;
+}
+
+.heroBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 22px;
+  border: 1px solid rgba(245, 166, 35, 0.4);
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #f5a623;
+  background: rgba(245, 166, 35, 0.08);
+  margin-bottom: 28px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.badgeDot {
+  width: 8px;
+  height: 8px;
+  background: #f5a623;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #f5a623;
+  animation: pulseBeacon 2s ease-in-out infinite;
+}
+
+@keyframes pulseBeacon {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
 }
 
 .heroTitle {
-  font-size: clamp(2.75rem, 5.5vw, 4.75rem);
-  font-weight: 800;
+  font-size: clamp(3rem, 7.5vw, 6.5rem);
+  font-weight: 900;
   line-height: 1.05;
-  color: #FFFFFF;
-  letter-spacing: -0.04em;
+  margin-bottom: 24px;
+  letter-spacing: -0.035em;
 }
 
-.heroTitleAccent {
-  color: var(--color-gold);
-  display: inline-block;
+.heroTitleGradient {
+  background: linear-gradient(135deg, #ffffff 20%, #6366f1 55%, #f5a623 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .heroSubtitle {
-  font-size: 1.125rem;
-  color: var(--color-text-secondary);
+  font-size: clamp(1.05rem, 2vw, 1.35rem);
+  color: #94a3b8;
+  max-width: 680px;
   line-height: 1.7;
-  max-width: 520px;
+  margin-bottom: 40px;
+  font-weight: 300;
 }
 
 .heroActions {
   display: flex;
+  gap: 16px;
   align-items: center;
-  gap: 1rem;
-  margin-top: 0.5rem;
+  justify-content: center;
   flex-wrap: wrap;
+  margin-bottom: 48px;
 }
 
-.heroThesisLink {
-  margin-top: 0.75rem;
-  font-size: 0.9rem;
-  color: var(--color-text-muted);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.heroThesisLink span {
-  color: var(--color-gold);
-  font-weight: 600;
-  text-decoration: underline;
-  text-underline-offset: 4px;
-  cursor: pointer;
-  transition: color 0.2s ease;
-}
-
-.heroThesisLink span:hover {
-  color: var(--color-gold-light);
-}
-
-/* Hero Visual Floating Cards (Cashfly-Style Clockwise Stepped Cascade) */
-.heroVisual {
-  position: relative;
-  width: 100%;
-  height: 660px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.cardPrimaryWrapper {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  z-index: 20;
-  width: 100%;
-  max-width: 425px;
-}
-
-.cardSecondaryWrapper {
-  position: absolute;
-  top: 360px;
-  left: 0px;
-  z-index: 15;
-  width: 100%;
-  max-width: 415px;
-}
-
-.floatingCardPrimary {
-  --card-rotate: 11deg; /* Change angle of Card 1 (e.g. 13deg, 10deg, 0deg) */
-  width: 100%;
-  padding: 1.65rem 1.75rem;
-  background: linear-gradient(135deg, rgba(22, 34, 82, 0.78) 0%, rgba(10, 18, 48, 0.65) 100%);
-  backdrop-filter: blur(28px);
-  -webkit-backdrop-filter: blur(28px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-top: 1px solid rgba(255, 255, 255, 0.35);
-  border-radius: 28px;
-  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.5),
-              inset 0 1px 0 rgba(255, 255, 255, 0.35);
-  transform: rotate(var(--card-rotate, 12deg));
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
-}
-
-.floatingCardPrimary:hover {
-  transform: translateY(-6px) rotate(calc(var(--card-rotate, 13deg) - 2deg)) scale(1.02);
-  box-shadow: 0 32px 64px rgba(0, 0, 0, 0.6),
-              0 0 25px rgba(26, 43, 166, 0.35);
-  z-index: 30;
-}
-
-.floatingCardSecondary {
-  --card-rotate: -5deg; /* Change angle of Card 2 (e.g. 13deg, 8deg, 5deg, 0deg, -5deg) */
-  width: 100%;
-  padding: 1.5rem 1.75rem;
-  background: linear-gradient(135deg, rgba(16, 26, 70, 0.8) 0%, rgba(8, 14, 38, 0.7) 100%);
-  backdrop-filter: blur(28px);
-  -webkit-backdrop-filter: blur(28px);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-top: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 26px;
-  box-shadow: 0 22px 45px rgba(0, 0, 0, 0.5),
-              inset 0 1px 0 rgba(255, 255, 255, 0.25);
-  transform: rotate(var(--card-rotate, 13deg));
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
-}
-
-.floatingCardSecondary:hover {
-  transform: translateY(-6px) rotate(calc(var(--card-rotate, 13deg) - 2deg)) scale(1.02);
-  box-shadow: 0 32px 64px rgba(0, 0, 0, 0.6),
-              0 0 25px rgba(245, 166, 35, 0.25);
-  z-index: 30;
-}
-
-.cardHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-}
-
-.cardChip {
-  width: 40px;
-  height: 30px;
-  border-radius: 6px;
-  background: linear-gradient(135deg, var(--color-gold-light), var(--color-gold));
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-}
-
-.cardLogoText {
-  font-family: var(--font-heading);
-  font-size: 1.1rem;
-  font-weight: 800;
-  letter-spacing: 0.05em;
-  color: #FFFFFF;
-}
-
-.cardPlateDisplay {
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+.btnGold {
+  padding: 14px 32px;
   border-radius: 14px;
-  padding: 1rem 1.25rem;
-  margin-bottom: 1.25rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.plateNumber {
-  font-family: var(--font-heading);
-  font-size: 1.75rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  color: #FFFFFF;
-}
-
-.plateBadge {
-  background: rgba(34, 197, 94, 0.15);
-  border: 1px solid rgba(34, 197, 94, 0.4);
-  color: #4ADE80;
-  font-size: 0.75rem;
+  font-size: 0.95rem;
   font-weight: 700;
-  padding: 0.25rem 0.65rem;
-  border-radius: 9999px;
-  display: flex;
+  cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none;
+  display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 10px;
+  border: none;
+  background: linear-gradient(135deg, #f5a623, #e09315);
+  color: #060914;
+  box-shadow: 0 4px 20px rgba(245, 166, 35, 0.35);
 }
 
-.cardMetaGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+.btnGold:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(245, 166, 35, 0.55);
 }
 
-.cardMetaItem {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-}
-
-.cardMetaLabel {
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--color-text-muted);
-}
-
-.cardMetaValue {
+.btnSecondary {
+  padding: 14px 32px;
+  border-radius: 14px;
   font-size: 0.95rem;
   font-weight: 600;
-  color: #FFFFFF;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
-/* Seamless Thesis Spotlight Section */
-.thesisSection {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto 5rem;
-  padding: 0 1.5rem;
-  position: relative;
-  z-index: 10;
+.btnSecondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-3px);
 }
 
-.thesisCard {
-  background: linear-gradient(160deg, rgba(13, 27, 122, 0.22) 0%, rgba(8, 14, 34, 0.6) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-top: 1px solid rgba(245, 166, 35, 0.3);
-  border-radius: 28px;
-  padding: 3rem;
-  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
+.scrollIndicator {
+  position: absolute;
+  bottom: 32px;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.scrollIndicatorText {
+  font-size: 0.75rem;
+  color: #64748b;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.scrollLine {
+  width: 1px;
+  height: 50px;
+  background: linear-gradient(to bottom, #f5a623, transparent);
+  animation: scrollLinePulse 2s ease-in-out infinite;
+}
+
+@keyframes scrollLinePulse {
+  0%, 100% { transform: scaleY(1); opacity: 1; }
+  50% { transform: scaleY(0.4); opacity: 0.3; }
+}
+
+/* -------------------------------------------------------------------------
+   2. PINNED SHOWCASE RUNWAY (Single Card & Description that morphs on scroll!)
+   ------------------------------------------------------------------------- */
+.showcaseRunway {
   position: relative;
+  width: 100%;
+  height: 350vh; /* Smooth scroll runway */
+  z-index: 2;
+}
+
+.stickyStage {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 48px;
   overflow: hidden;
 }
 
-.thesisWatermark {
-  position: absolute;
-  right: -2rem;
-  bottom: -3rem;
-  font-size: 14rem;
-  font-weight: 900;
-  color: rgba(255, 255, 255, 0.02);
-  pointer-events: none;
-  user-select: none;
-  font-family: var(--font-heading);
-}
-
-.thesisTag {
-  display: inline-flex;
+/* Top Stage Pill Navigation */
+.stageTopPills {
+  display: flex;
   align-items: center;
-  gap: 0.5rem;
-  color: var(--color-gold);
-  font-size: 0.85rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.thesisTitleText {
-  font-size: clamp(1.75rem, 3.2vw, 2.75rem);
-  font-weight: 800;
-  line-height: 1.25;
-  color: #FFFFFF;
-  max-width: 980px;
-}
-
-.thesisSubtitleText {
-  font-size: 1.05rem;
-  color: var(--color-text-secondary);
-  line-height: 1.7;
-  max-width: 900px;
-}
-
-.thesisMetaRow {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.thesisMetaBlock {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-}
-
-.thesisMetaHeader {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  color: var(--color-gold);
-  letter-spacing: 0.05em;
-  font-weight: 600;
-}
-
-.thesisMetaBody {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #FFFFFF;
-}
-
-/* Section Common Headers */
-.sectionHeader {
-  text-align: center;
-  max-width: 700px;
-  margin: 0 auto 3.5rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-}
-
-.sectionTitle {
-  font-size: clamp(2rem, 3.5vw, 3rem);
-  font-weight: 800;
-  color: #FFFFFF;
-  letter-spacing: -0.03em;
-}
-
-.sectionSubtitle {
-  font-size: 1.05rem;
-  color: var(--color-text-secondary);
-  line-height: 1.65;
-}
-
-/* App & System Showcase Section */
-.showcaseSection {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto 6rem;
-  padding: 0 1.5rem;
-  position: relative;
-  z-index: 10;
-}
-
-.showcaseTabs {
-  display: flex;
-  justify-content: center;
-  gap: 0.75rem;
-  margin-bottom: 2.5rem;
-  flex-wrap: wrap;
-}
-
-.showcaseTabBtn {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: var(--color-text-secondary);
-  padding: 0.75rem 1.5rem;
+  gap: 10px;
+  margin-bottom: 2rem;
+  background: rgba(10, 16, 42, 0.65);
+  backdrop-filter: blur(16px);
+  padding: 6px 12px;
   border-radius: 9999px;
-  font-size: 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stagePill {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  padding: 6px 16px;
+  border-radius: 9999px;
+  font-size: 0.78rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.25s ease;
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 6px;
 }
 
-.showcaseTabBtn:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: #FFFFFF;
+.stagePillActive {
+  background: linear-gradient(135deg, #1a2ba6, #6366f1);
+  color: #ffffff;
+  box-shadow: 0 2px 12px rgba(99, 102, 241, 0.4);
 }
 
-.showcaseTabBtnActive {
-  background: linear-gradient(135deg, var(--color-royal-light), var(--color-royal-blue));
-  border-color: rgba(255, 255, 255, 0.25);
-  color: #FFFFFF;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
-}
-
-.showcaseDisplay {
-  background: rgba(14, 22, 54, 0.4);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 28px;
-  padding: 3rem;
+/* Dynamic Stage Content Grid */
+.stageContentWrapper {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 3rem;
+  gap: 70px;
   align-items: center;
+  max-width: 1350px;
+  width: 100%;
+  transition: transform 0.15s ease-out; /* Parallax motion */
 }
 
-.showcaseDetails {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+/* Text Column with smooth morph transition */
+.textColumn {
+  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.showcaseTag {
-  color: var(--color-gold);
+.sectionNumber {
+  font-family: monospace;
   font-size: 0.85rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-.showcaseHeading {
-  font-size: 2rem;
+  color: #f5a623;
   font-weight: 800;
-  color: #FFFFFF;
+  letter-spacing: 3px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.showcaseDescription {
-  font-size: 1rem;
-  color: var(--color-text-secondary);
-  line-height: 1.7;
+.sectionNumber::after {
+  content: '';
+  width: 40px;
+  height: 1px;
+  background: #f5a623;
+}
+
+.sectionTitle {
+  font-size: clamp(2.2rem, 3.8vw, 3.5rem);
+  font-weight: 800;
+  margin-bottom: 20px;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.titleHighlight {
+  background: linear-gradient(135deg, #6366f1, #a78bfa, #f5a623);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.sectionDescription {
+  font-size: 1.05rem;
+  color: #94a3b8;
+  line-height: 1.75;
+  margin-bottom: 30px;
+  font-weight: 300;
 }
 
 .featureList {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
+  gap: 14px;
+  margin-bottom: 32px;
 }
 
 .featureItem {
   display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-size: 0.95rem;
-  color: #FFFFFF;
+  align-items: flex-start;
+  gap: 14px;
+  font-size: 0.92rem;
+  color: #cbd5e1;
+  line-height: 1.55;
 }
 
 .featureIcon {
-  color: var(--color-gold);
-  flex-shrink: 0;
-}
-
-/* App Screen Showcase Frames */
-.mockupFrameWrapper {
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  background: rgba(99, 102, 241, 0.15);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: 6px;
   display: flex;
+  align-items: center;
   justify-content: center;
-  align-items: center;
-  width: 100%;
-}
-
-/* Smartphone Mockup Frame (User App & Admin App) */
-.phoneMockupFrame {
-  width: 285px;
-  max-width: 100%;
-  aspect-ratio: 864 / 1920;
-  background: #0B1120;
-  border: 10px solid #1E293B;
-  border-radius: 46px;
-  box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.12);
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.phoneMockupFrame:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 30px 70px -10px rgba(0, 0, 0, 0.8), 0 0 25px rgba(26, 43, 166, 0.3);
-}
-
-.phoneSpeaker {
-  position: absolute;
-  top: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 55px;
-  height: 4px;
-  background: #334155;
-  border-radius: 9999px;
-  z-index: 30;
-}
-
-.phoneScreenContent {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  border-radius: 36px;
-  overflow: hidden;
-  background: #000;
-}
-
-.phoneScreenImage {
-  object-fit: cover;
-  transition: transform 0.5s ease;
-}
-
-.phoneGlareOverlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 45%);
-  pointer-events: none;
-  z-index: 20;
-}
-
-.phoneBadgeOverlay {
-  position: absolute;
-  bottom: 14px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(10, 15, 36, 0.88);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  color: #FFFFFF;
-  padding: 0.35rem 0.85rem;
-  border-radius: 9999px;
-  font-size: 0.72rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-  z-index: 25;
-  white-space: nowrap;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.45);
-}
-
-/* AI ALPR Vision Monitor Frame */
-.aiVisionMonitor {
-  width: 100%;
-  max-width: 500px;
-  background: #070B1E;
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7), 0 0 35px rgba(26, 43, 166, 0.25);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.aiVisionMonitor:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 30px 70px -10px rgba(0, 0, 0, 0.8), 0 0 45px rgba(245, 166, 35, 0.2);
-}
-
-.aiVisionHeader {
-  height: 38px;
-  background: rgba(255, 255, 255, 0.05);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  display: flex;
-  align-items: center;
-  padding: 0 1rem;
-  gap: 0.5rem;
-}
-
-.windowDotRed {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #EF4444;
-}
-
-.windowDotYellow {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #F59E0B;
-}
-
-.windowDotGreen {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #10B981;
-}
-
-.aiVisionTitle {
-  margin-left: 0.5rem;
   font-size: 0.75rem;
-  color: #94A3B8;
-  font-family: monospace;
+  color: #a5b4fc;
+  margin-top: 2px;
 }
 
-.aiVisionLiveBadge {
-  margin-left: auto;
-  font-size: 0.72rem;
-  color: #4ADE80;
-  font-weight: 700;
+.techTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.techTag {
+  padding: 6px 16px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: monospace;
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  color: #a5b4fc;
+}
+
+.techTagGreen {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.2);
+  color: #86efac;
+}
+
+.techTagGold {
+  background: rgba(245, 166, 35, 0.1);
+  border-color: rgba(245, 166, 35, 0.25);
+  color: #ffc84a;
+}
+
+/* Interactive Action Buttons per Stage */
+.stageActionsRow {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
-  background: rgba(34, 197, 94, 0.12);
-  padding: 0.2rem 0.6rem;
-  border-radius: 9999px;
-  border: 1px solid rgba(34, 197, 94, 0.25);
+  gap: 12px;
+  margin-top: 24px;
+  flex-wrap: wrap;
 }
 
-.aiVisionScreenWrapper {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 678 / 499;
-  background: #000;
-  overflow: hidden;
-}
-
-.aiVisionScreenImage {
-  object-fit: cover;
-}
-
-.aiVisionHudOverlay {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  right: 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  pointer-events: none;
-  z-index: 10;
-}
-
-.aiHudTag {
-  background: rgba(7, 11, 30, 0.85);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(34, 197, 94, 0.5);
-  color: #4ADE80;
-  font-family: monospace;
-  font-size: 0.72rem;
-  font-weight: 700;
-  padding: 0.25rem 0.6rem;
-  border-radius: 6px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-}
-
-.aiHudTagGold {
-  background: rgba(7, 11, 30, 0.85);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(245, 166, 35, 0.6);
-  color: #F5A623;
-  font-family: monospace;
-  font-size: 0.72rem;
-  font-weight: 700;
-  padding: 0.25rem 0.6rem;
-  border-radius: 6px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-}
-
-.aiVisionTelemetry {
-  padding: 1rem 1.25rem;
-  background: rgba(10, 15, 36, 0.95);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.75rem;
-}
-
-.aiTelemetryItem {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-}
-
-.aiTelemetryLabel {
-  font-size: 0.68rem;
-  color: #94A3B8;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.aiTelemetryValue {
+.stageActionPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 10px;
   font-size: 0.85rem;
   font-weight: 700;
-  color: #FFFFFF;
-  font-family: monospace;
+  cursor: pointer;
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  color: #ffffff;
+  border: 1px solid rgba(99, 102, 241, 0.4);
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+  transition: all 0.25s ease;
 }
 
-/* IoT Barrier Hardware Prototyping Card (Coming Soon & Active Development) */
-.hardwareDevCard {
+.stageActionPrimary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
+}
+
+.stageActionSecondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.05);
+  color: #cbd5e1;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: all 0.25s ease;
+}
+
+.stageActionSecondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.simulatedToast {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+  padding: 10px 18px;
+  border-radius: 8px;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #86efac;
+  font-size: 0.85rem;
+  font-weight: 600;
+  animation: fadeInToast 0.3s ease-out;
+}
+
+@keyframes fadeInToast {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Visual Column */
+.visualColumn {
+  display: flex;
+  justify-content: center;
+  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.deviceMockup {
+  position: relative;
   width: 100%;
-  max-width: 490px;
-  background: linear-gradient(145deg, rgba(13, 20, 48, 0.96), rgba(7, 11, 28, 0.98));
-  border: 1px solid rgba(245, 166, 35, 0.35);
-  border-radius: 24px;
-  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7), 0 0 35px rgba(245, 166, 35, 0.1);
+  max-width: 520px;
+}
+
+.screenFrame {
+  background: linear-gradient(145deg, #121629, #0c1022);
+  border-radius: 20px;
+  padding: 20px;
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  box-shadow: 
+    0 0 0 1px rgba(99, 102, 241, 0.1),
+    0 24px 70px rgba(0, 0, 0, 0.6),
+    0 0 100px rgba(99, 102, 241, 0.1);
+  transition: transform 0.2s ease-out, border-color 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.hardwareDevCard:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 30px 70px -10px rgba(0, 0, 0, 0.8), 0 0 45px rgba(245, 166, 35, 0.25);
-}
-
-.hardwareHeader {
-  height: 40px;
-  background: rgba(255, 255, 255, 0.04);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+.screenTopbar {
   display: flex;
   align-items: center;
-  padding: 0 1.25rem;
-  gap: 0.5rem;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.hardwareTitle {
-  margin-left: 0.5rem;
+.screenDotRed { width: 10px; height: 10px; border-radius: 50%; background: #ff5f57; }
+.screenDotYellow { width: 10px; height: 10px; border-radius: 50%; background: #febc2e; }
+.screenDotGreen { width: 10px; height: 10px; border-radius: 50%; background: #28c840; }
+
+.screenTitle {
+  margin-left: auto;
+  margin-right: auto;
   font-size: 0.75rem;
-  color: #94A3B8;
+  color: #64748b;
   font-family: monospace;
 }
 
-.hardwareActiveBadge {
-  margin-left: auto;
-  font-size: 0.72rem;
-  color: #F5A623;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  background: rgba(245, 166, 35, 0.12);
-  padding: 0.25rem 0.65rem;
+.screenshotToggleBtn {
+  font-size: 0.7rem;
+  padding: 3px 10px;
   border-radius: 9999px;
+  background: rgba(245, 166, 35, 0.15);
   border: 1px solid rgba(245, 166, 35, 0.3);
+  color: #ffc84a;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.hardwareBody {
-  padding: 1.5rem 1.5rem 1.75rem;
+.screenshotToggleBtn:hover {
+  background: rgba(245, 166, 35, 0.25);
+}
+
+.screenContent {
+  background: #070a16;
+  border-radius: 12px;
+  padding: 24px;
+  min-height: 340px;
   display: flex;
   flex-direction: column;
-  gap: 1.15rem;
+  gap: 16px;
+  position: relative;
+  overflow: hidden;
 }
 
-.hardwareHeroBox {
+/* User Dashboard Mockup elements */
+.mockHeader {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 1.15rem;
-  padding: 1.15rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
 }
 
-.hardwareIconRing {
-  width: 52px;
-  height: 52px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, rgba(245, 166, 35, 0.2), rgba(26, 43, 166, 0.3));
-  border: 1px solid rgba(245, 166, 35, 0.4);
+.mockAvatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1a2ba6, #6366f1);
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-  box-shadow: 0 0 20px rgba(245, 166, 35, 0.2);
-}
-
-.hardwareHeroText {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.hardwareHeroHeading {
-  font-size: 1.02rem;
+  font-size: 0.85rem;
   font-weight: 700;
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
-.hardwareHeroSub {
-  font-size: 0.78rem;
-  color: #94A3B8;
-  line-height: 1.4;
+.mockGreeting {
+  flex: 1;
+  margin-left: 12px;
 }
 
-.hardwareProgressSection {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+.mockName {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #e2e8f0;
 }
 
-.hardwareProgressHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.8rem;
+.mockSubtitle {
+  font-size: 0.72rem;
+  color: #64748b;
 }
 
-.hardwareProgressTrack {
-  height: 8px;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 9999px;
-  overflow: hidden;
-}
-
-.hardwareProgressBar {
-  width: 75%;
-  height: 100%;
-  background: linear-gradient(90deg, #F5A623, #FBBF24, #1A2BA6);
-  border-radius: 9999px;
-}
-
-.hardwarePhaseList {
-  display: flex;
-  flex-direction: column;
-  gap: 0.55rem;
-}
-
-.hardwarePhaseItem {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 0.8rem;
-  padding: 0.5rem 0.75rem;
+.mockNotification {
+  width: 36px;
+  height: 36px;
   border-radius: 10px;
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  position: relative;
+}
+
+.mockBadge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 14px;
+  height: 14px;
+  background: #ef4444;
+  border-radius: 50%;
+  font-size: 0.55rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: white;
+}
+
+.mockStats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.mockStatCard {
+  background: rgba(99, 102, 241, 0.06);
+  border: 1px solid rgba(99, 102, 241, 0.14);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.mockStatLabel {
+  font-size: 0.65rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+
+.mockStatValue {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #e2e8f0;
+}
+
+.mockStatChange {
+  font-size: 0.65rem;
+  color: #22c55e;
+  margin-top: 4px;
+}
+
+.mockChart {
   background: rgba(255, 255, 255, 0.02);
+  border-radius: 12px;
+  padding: 16px;
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.hardwarePhaseLabel {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: #E2E8F0;
-}
-
-.hardwareStatusTagDone {
-  font-size: 0.68rem;
-  font-weight: 700;
-  color: #4ADE80;
-  background: rgba(34, 197, 94, 0.12);
-  padding: 0.15rem 0.5rem;
-  border-radius: 9999px;
-  border: 1px solid rgba(34, 197, 94, 0.3);
-}
-
-.hardwareStatusTagDoing {
-  font-size: 0.68rem;
-  font-weight: 700;
-  color: #F5A623;
-  background: rgba(245, 166, 35, 0.15);
-  padding: 0.15rem 0.5rem;
-  border-radius: 9999px;
-  border: 1px solid rgba(245, 166, 35, 0.35);
-}
-
-.hardwareStatusTagNext {
-  font-size: 0.68rem;
+.mockChartTitle {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin-bottom: 14px;
   font-weight: 600;
-  color: #94A3B8;
-  background: rgba(255, 255, 255, 0.06);
-  padding: 0.15rem 0.5rem;
-  border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.hardwareSpecsRow {
+.mockChartBars {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  margin-top: 0.2rem;
+  align-items: flex-end;
+  gap: 6px;
+  height: 80px;
 }
 
-.hardwareSpecChip {
-  font-size: 0.7rem;
-  color: #CBD5E1;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 0.2rem 0.5rem;
-  border-radius: 6px;
-  font-family: monospace;
+.mockBar {
+  flex: 1;
+  border-radius: 4px 4px 0 0;
+  background: linear-gradient(to top, #1a2ba6, #6366f1);
+  transition: height 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  min-height: 8px;
+  opacity: 0.7;
 }
 
-/* 5 Group Members Team Section */
-.teamSection {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto 6rem;
-  padding: 0 1.5rem;
-  position: relative;
-  z-index: 10;
+.mockBarActive {
+  background: linear-gradient(to top, #6366f1, #f5a623);
+  opacity: 1;
 }
 
-.teamGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.5rem;
+/* Admin Console Mockup elements */
+.mockSidebar {
+  display: flex;
+  gap: 12px;
 }
 
-.memberCard {
-  background: rgba(14, 22, 54, 0.4);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 22px;
-  padding: 2rem 1.5rem;
+.mockNav {
+  width: 44px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  gap: 10px;
+  padding: 8px 0;
+}
+
+.mockNavItem {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.04);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.mockNavItemActive {
+  background: rgba(99, 102, 241, 0.25);
+  color: #a5b4fc;
+}
+
+.mockMainContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mockTable {
+  width: 100%;
+}
+
+.mockTableRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.mockTableRowHeader {
+  font-size: 0.6rem;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+.mockCell {
+  flex: 1;
+  font-size: 0.72rem;
+  color: #94a3b8;
+}
+
+.mockCellName {
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.mockStatusActive {
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 0.6rem;
+  font-weight: 600;
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+}
+
+.mockStatusPending {
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 0.6rem;
+  font-weight: 600;
+  background: rgba(234, 179, 8, 0.15);
+  color: #facc15;
+}
+
+/* YOLOv11 Camera Feed Mockup */
+.mockDetectionArea {
+  position: relative;
+  background: #0c0c1a;
+  border-radius: 10px;
+  overflow: hidden;
+  min-height: 190px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.mockCameraFeed {
+  width: 100%;
+  height: 190px;
+  background: linear-gradient(145deg, #111127, #0c0c1a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   position: relative;
   overflow: hidden;
 }
 
-.memberCard:hover {
-  transform: translateY(-6px);
-  border-color: rgba(245, 166, 35, 0.4);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
-}
-
-.memberCard:hover .memberAvatarPlaceholder {
-  transform: scale(1.06);
-  border-color: rgba(245, 166, 35, 0.5);
-}
-
-.memberAvatarPlaceholder {
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, rgba(26, 43, 166, 0.4), rgba(13, 27, 122, 0.3));
-  border: 2px solid rgba(255, 255, 255, 0.16);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 1.25rem;
-  position: relative;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
-}
-
-.avatarBadge {
+.detectionBoxPerson {
   position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: var(--color-gold);
-  color: #070D1E;
-  font-weight: 800;
-  font-size: 0.75rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid #060914;
+  border: 2px solid #22c55e;
+  border-radius: 4px;
+  width: 60px;
+  height: 95px;
+  top: 35px;
+  left: 35px;
+  animation: detectPulse 2s ease-in-out infinite;
 }
 
-.memberName {
-  font-size: 1.15rem;
+.detectionBoxObject {
+  position: absolute;
+  border: 2px solid #f59e0b;
+  border-radius: 4px;
+  width: 75px;
+  height: 50px;
+  top: 65px;
+  right: 50px;
+  animation: detectPulse 2s ease-in-out infinite 0.5s;
+}
+
+.detectionBoxVehicle {
+  position: absolute;
+  border: 2px solid #6366f1;
+  border-radius: 4px;
+  width: 110px;
+  height: 65px;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: detectPulse 2s ease-in-out infinite 1s;
+}
+
+.detectionLabel {
+  position: absolute;
+  top: -18px;
+  left: -2px;
+  font-size: 0.55rem;
+  font-family: monospace;
   font-weight: 700;
-  color: #FFFFFF;
-  margin-bottom: 0.35rem;
+  padding: 1px 6px;
+  border-radius: 3px;
+  white-space: nowrap;
 }
 
-.memberRole {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--color-gold);
-  margin-bottom: 0.75rem;
+.detectionLabelPerson {
+  background: #22c55e;
+  color: #000;
 }
 
-.memberBio {
-  font-size: 0.8rem;
-  color: var(--color-text-muted);
-  line-height: 1.5;
+.detectionLabelObject {
+  background: #f59e0b;
+  color: #000;
 }
 
-/* System Architecture Grid */
-.architectureSection {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto 6rem;
-  padding: 0 1.5rem;
-  position: relative;
-  z-index: 10;
+.detectionLabelVehicle {
+  background: #6366f1;
+  color: #fff;
 }
 
-.architectureGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
+@keyframes detectPulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
+  50% { opacity: 0.8; box-shadow: 0 0 15px 3px rgba(99, 102, 241, 0.15); }
 }
 
-.archCard {
-  background: rgba(14, 22, 54, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 20px;
-  padding: 2rem;
+.mockTerminal {
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 8px;
+  padding: 12px;
+  font-family: monospace;
+  font-size: 0.68rem;
+  color: #22c55e;
+  line-height: 1.8;
+  border: 1px solid rgba(34, 197, 94, 0.15);
+}
+
+.typingCursor {
+  display: inline-block;
+  width: 7px;
+  height: 14px;
+  background: #22c55e;
+  animation: blink 1s step-end infinite;
+  vertical-align: middle;
+  margin-left: 2px;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* -------------------------------------------------------------------------
+   3. FINAL SECTION (Exact match to User Screenshot!)
+   "Experience the Future of Campus Security"
+   ------------------------------------------------------------------------- */
+.finalCtaSection {
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.archCard:hover {
-  background: rgba(14, 22, 54, 0.6);
-  border-color: rgba(245, 166, 35, 0.35);
-  transform: translateY(-5px);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
-}
-
-.archCard:hover .archIcon {
-  transform: scale(1.08) rotate(4deg);
-  background: rgba(245, 166, 35, 0.2);
-  border-color: rgba(245, 166, 35, 0.5);
-}
-
-.archIcon {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  background: rgba(26, 43, 166, 0.25);
-  border: 1px solid rgba(26, 43, 166, 0.4);
-  display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-gold);
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease, border-color 0.3s ease;
-}
-
-.archTitle {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #FFFFFF;
-}
-
-.archText {
-  font-size: 0.9rem;
-  color: var(--color-text-secondary);
-  line-height: 1.6;
-}
-
-/* Footer */
-.footerSection {
-  width: 100%;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 4rem 1.5rem 2.5rem;
-  background: #04060E;
+  text-align: center;
   position: relative;
-  z-index: 10;
+  z-index: 2;
+  padding: 80px 24px;
 }
 
-.footerContainer {
-  max-width: 1200px;
+.finalCtaWrapper {
+  max-width: 900px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 3rem;
-}
-
-.footerTop {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  gap: 2rem;
-}
-
-.footerBrand {
-  max-width: 380px;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.footerDescription {
-  font-size: 0.9rem;
-  color: var(--color-text-muted);
-  line-height: 1.6;
-}
-
-.footerLinksCol {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.footerHeading {
-  font-size: 0.85rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--color-gold);
-}
-
-.footerBottom {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding-top: 2rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-  font-size: 0.85rem;
-  color: var(--color-text-muted);
+}
+
+.finalCtaTitle {
+  font-size: clamp(2.8rem, 6.5vw, 5.5rem);
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: 24px;
+  letter-spacing: -0.035em;
+  color: #ffffff;
+}
+
+.finalCtaSecurityGradient {
+  background: linear-gradient(135deg, #a78bfa 0%, #f5a623 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.finalCtaSubtitle {
+  font-size: clamp(1.05rem, 1.8vw, 1.25rem);
+  color: #94a3b8;
+  max-width: 720px;
+  line-height: 1.7;
+  margin-bottom: 44px;
+  font-weight: 300;
+}
+
+.finalCtaActions {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  justify-content: center;
   flex-wrap: wrap;
-  gap: 1rem;
 }
 
-/* ==========================================================================
-   Comprehensive Mobile & Tablet Responsive Media Queries
-   ========================================================================== */
-@media (max-width: 1024px) {
-  .heroContent {
-    grid-template-columns: 1fr;
-    text-align: center;
-    gap: 3.5rem;
-  }
-
-  .heroLeft {
-    align-items: center;
-  }
-
-  .heroSubtitle {
-    max-width: 600px;
-  }
-
-  .heroActions {
-    justify-content: center;
-  }
-
-  .heroThesisLink {
-    justify-content: center;
-  }
-
-  .heroVisual {
-    height: 640px;
-    max-width: 480px;
-    margin: 1rem auto 0;
-  }
-
-  .showcaseDisplay {
-    grid-template-columns: 1fr;
-    padding: 2.25rem 1.75rem;
-    gap: 2.5rem;
-  }
-
-  .architectureGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+.btnDownloadPill {
+  padding: 16px 36px;
+  border-radius: 9999px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border: none;
+  background: #e5971a;
+  color: #000000;
+  box-shadow: 0 4px 24px rgba(229, 151, 26, 0.4);
 }
 
-@media (max-width: 768px) {
-  .heroSection {
-    padding: 1rem 1rem 3.5rem;
-  }
+.btnDownloadPill:hover {
+  transform: translateY(-3px);
+  background: #f5a623;
+  box-shadow: 0 8px 32px rgba(245, 166, 35, 0.6);
+}
 
-  .navbar {
-    padding: 0.65rem 1.15rem;
-    margin-bottom: 2rem;
-  }
+.btnBackToTop {
+  padding: 16px 34px;
+  border-radius: 9999px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: rgba(15, 23, 42, 0.6);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
 
-  .navLinks {
-    display: none;
-  }
+.btnBackToTop:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.35);
+  transform: translateY(-3px);
+}
 
-  .brandLogo {
-    font-size: 1.1rem;
+/* Responsive */
+@media (max-width: 968px) {
+  .stageContentWrapper {
+    grid-template-columns: 1fr;
+    gap: 32px;
   }
-
-  .brandIconWrapper {
-    width: 32px;
-    height: 32px;
+  .stageTopPills {
+    margin-bottom: 1.25rem;
   }
-
+  .stickyStage {
+    padding: 0 20px;
+  }
   .heroTitle {
-    font-size: clamp(2.1rem, 7vw, 3rem);
+    font-size: 2.8rem;
   }
-
-  .heroSubtitle {
-    font-size: 0.98rem;
-    line-height: 1.6;
-  }
-
-  .heroVisual {
-    height: 540px;
-    width: 100%;
-    max-width: 400px;
-    margin: 1.5rem auto 0;
-  }
-
-  .cardPrimaryWrapper {
-    top: 5px;
-    right: 5px;
-    max-width: 350px;
-  }
-
-  .cardSecondaryWrapper {
-    top: 280px;
-    left: 5px;
-    max-width: 340px;
-  }
-
-  .floatingCardPrimary {
-    padding: 1.25rem 1.35rem;
-    border-radius: 22px;
-  }
-
-  .floatingCardSecondary {
-    padding: 1.15rem 1.25rem;
-    border-radius: 20px;
-  }
-
-  .cardHeader {
-    margin-bottom: 1rem;
-  }
-
-  .plateNumber {
-    font-size: 1.4rem;
-  }
-
-  .cardPlateDisplay {
-    padding: 0.75rem 1rem;
-    margin-bottom: 0.85rem;
-  }
-
-  .cardMetaGrid {
-    gap: 0.75rem;
-  }
-
-  .cardMetaLabel {
-    font-size: 0.65rem;
-  }
-
-  .cardMetaValue {
-    font-size: 0.85rem;
-  }
-
-  .thesisSection {
-    margin-bottom: 3.5rem;
-  }
-
-  .thesisCard {
-    padding: 2rem 1.25rem;
-    border-radius: 20px;
-    gap: 1.25rem;
-  }
-
-  .thesisTitleText {
-    font-size: 1.35rem;
-  }
-
-  .thesisSubtitleText {
-    font-size: 0.95rem;
-    line-height: 1.6;
-  }
-
-  .thesisMetaRow {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.25rem;
-  }
-
-  .showcaseSection {
-    margin-bottom: 4rem;
-  }
-
-  .showcaseTabs {
-    gap: 0.5rem;
-    margin-bottom: 1.75rem;
-  }
-
-  .showcaseTabBtn {
-    padding: 0.6rem 1rem;
-    font-size: 0.82rem;
-  }
-
-  .showcaseDisplay {
-    padding: 1.75rem 1.25rem;
-    border-radius: 20px;
-    gap: 2rem;
-  }
-
-  .showcaseHeading {
-    font-size: 1.5rem;
-  }
-
-  .showcaseDescription {
-    font-size: 0.92rem;
-  }
-
-  .phoneMockupFrame {
-    width: 260px;
-    height: auto;
-    border-width: 8px;
-    border-radius: 38px;
-  }
-
-  .teamSection {
-    margin-bottom: 4rem;
-  }
-
-  .teamGrid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-  }
-
-  .memberCard {
-    padding: 1.5rem 1rem;
-    border-radius: 18px;
-  }
-
-  .memberName {
-    font-size: 1.05rem;
-  }
-
-  .architectureSection {
-    margin-bottom: 4rem;
-  }
-
-  .architectureGrid {
-    grid-template-columns: 1fr;
-    gap: 1.25rem;
-  }
-
-  .archCard {
-    padding: 1.5rem;
-    border-radius: 18px;
-  }
-
-  .footerSection {
-    padding: 3rem 1.5rem 2rem;
-  }
-
-  .footerTop {
-    flex-direction: column;
-    gap: 2rem;
-  }
-
-  .footerBottom {
-    flex-direction: column;
-    text-align: center;
-    gap: 0.75rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .heroActions {
-    flex-direction: column;
-    width: 100%;
-    gap: 0.75rem;
-  }
-
-  .heroActions a {
-    width: 100%;
-  }
-
-  .heroVisual {
-    height: 480px;
-    max-width: 320px;
-    margin: 1rem auto 0;
-  }
-
-  .cardPrimaryWrapper {
-    top: 0;
-    right: 0;
-    max-width: 295px;
-  }
-
-  .cardSecondaryWrapper {
-    top: 245px;
-    left: 0;
-    max-width: 285px;
-  }
-
-  .floatingCardPrimary {
-    padding: 1rem 1.15rem;
-    border-radius: 18px;
-  }
-
-  .floatingCardSecondary {
-    padding: 0.95rem 1.1rem;
-    border-radius: 18px;
-  }
-
-  .cardChip {
-    width: 34px;
-    height: 26px;
-  }
-
-  .cardLogoText {
-    font-size: 0.95rem;
-  }
-
-  .plateNumber {
-    font-size: 1.2rem;
-    letter-spacing: 0.08em;
-  }
-
-  .plateBadge {
-    font-size: 0.68rem;
-    padding: 0.2rem 0.5rem;
-  }
-
-  .cardMetaGrid {
-    gap: 0.6rem;
-  }
-
-  .cardMetaLabel {
-    font-size: 0.62rem;
-  }
-
-  .cardMetaValue {
-    font-size: 0.78rem;
-  }
-
-  .sectionTitle {
-    font-size: 1.75rem;
-  }
-
-  .sectionSubtitle {
-    font-size: 0.92rem;
-  }
-
-  .thesisMetaRow {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
-  .teamGrid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
-  .phoneMockupFrame {
-    width: 240px;
-    height: auto;
+  .finalCtaTitle {
+    font-size: 2.6rem;
   }
 }

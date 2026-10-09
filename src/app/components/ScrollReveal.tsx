@@ -27,7 +27,8 @@ export default function ScrollReveal({
   style = {},
   as: Component = "div",
 }: ScrollRevealProps): React.JSX.Element {
-  const elementRef = useRef<HTMLElement | null>(null);
+  const elementRef = useRef<HTMLDivElement | null>(null);
+  const Tag = Component as any;
 
   useEffect(() => {
     const node = elementRef.current;
@@ -71,12 +72,12 @@ export default function ScrollReveal({
   const directionClass = direction !== "none" ? `reveal-${direction}` : "";
 
   return (
-    <Component
+    <Tag
       ref={elementRef}
       className={`scroll-reveal ${directionClass} ${className}`.trim()}
       style={transitionStyle}
     >
       {children}
-    </Component>
+    </Tag>
   );
 }

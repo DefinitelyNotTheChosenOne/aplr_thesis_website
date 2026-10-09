@@ -1,0 +1,513 @@
+/* =========================================================================
+   ThreeScrollShowcase Module Styles
+   IntelliGate 3D Scroll-Driven Interactive Showcase
+   ========================================================================= */
+
+.showcaseRoot {
+  position: relative;
+  width: 100%;
+  background: #040711;
+  color: #ffffff;
+  overflow: visible;
+}
+
+/* -------------------------------------------------------------------------
+   Pinned Sticky Viewport Container
+   Height of the overall container determines the scroll runway length
+   ------------------------------------------------------------------------- */
+.scrollSectionTrack {
+  position: relative;
+  width: 100%;
+  height: 400vh; /* 4 steps x 100vh of smooth scroll runway */
+}
+
+.stickyViewport {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  z-index: 10;
+}
+
+/* Background 3D WebGL Canvas */
+.canvasContainer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  cursor: grab;
+  touch-action: none;
+}
+
+.canvasContainer:active {
+  cursor: grabbing;
+}
+
+.threeCanvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+/* Ambient lighting behind canvas */
+.ambientBackgroundGlow {
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(circle at 65% 50%, rgba(26, 43, 166, 0.22) 0%, transparent 60%),
+    radial-gradient(circle at 30% 70%, rgba(245, 166, 35, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 50% 0%, rgba(13, 27, 122, 0.3) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.gridOverlay {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+  mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.8) 0%, transparent 80%);
+}
+
+/* -------------------------------------------------------------------------
+   HUD: Stage Indicator & Progress Bar
+   ------------------------------------------------------------------------- */
+.hudTopBar {
+  position: absolute;
+  top: 1.5rem;
+  left: 2rem;
+  right: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.hudBrandBadge {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 1rem;
+  border-radius: 9999px;
+  background: rgba(10, 16, 42, 0.65);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(245, 166, 35, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #f5a623;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.pulseBeacon {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f5a623;
+  box-shadow: 0 0 10px #f5a623;
+  animation: beaconPulse 2s infinite ease-in-out;
+}
+
+@keyframes beaconPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
+}
+
+.hudStepNav {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(10, 16, 42, 0.6);
+  backdrop-filter: blur(16px);
+  padding: 0.35rem 0.6rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.stepNavBtn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.stepNavBtn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.stepNavBtnActive {
+  background: linear-gradient(135deg, #1a2ba6, #2a3fb8);
+  color: #ffffff;
+  box-shadow: 0 2px 10px rgba(26, 43, 166, 0.4);
+}
+
+/* -------------------------------------------------------------------------
+   HUD: Bottom Floating Controls
+   ------------------------------------------------------------------------- */
+.hudControlsBottom {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 2rem;
+  right: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.hudControlGroup {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(10, 16, 42, 0.7);
+  backdrop-filter: blur(16px);
+  padding: 0.35rem 0.6rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.controlBtn {
+  background: transparent;
+  border: none;
+  color: #cbd5e1;
+  padding: 0.4rem 0.85rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.controlBtn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.controlBtnActive {
+  background: rgba(245, 166, 35, 0.15);
+  border: 1px solid rgba(245, 166, 35, 0.4);
+  color: #ffc84a;
+}
+
+.dragTip {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.72rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0 0.5rem;
+}
+
+/* -------------------------------------------------------------------------
+   Dynamic Content Cards (Left Side Floating Over 3D Scene)
+   ------------------------------------------------------------------------- */
+.stageContentOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  padding: 0 3rem;
+}
+
+.stageCardWrapper {
+  max-width: 520px;
+  width: 100%;
+  pointer-events: auto;
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.stageGlassCard {
+  background: rgba(10, 16, 38, 0.72);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  padding: 2.25rem;
+  box-shadow: 
+    0 24px 60px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+.cardGlowBorder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #f5a623, #1a2ba6, transparent);
+}
+
+.stageTagRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.15rem;
+}
+
+.stageIndexBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #f5a623;
+  background: rgba(245, 166, 35, 0.12);
+  border: 1px solid rgba(245, 166, 35, 0.25);
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+}
+
+.stageTechBadge {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  font-family: monospace;
+}
+
+.stageTitle {
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1.15;
+  color: #ffffff;
+  margin-bottom: 0.85rem;
+  letter-spacing: -0.02em;
+}
+
+.stageTitleHighlight {
+  background: linear-gradient(135deg, #ffffff 40%, #f5a623 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.stageDescription {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #cbd5e1;
+  margin-bottom: 1.5rem;
+}
+
+.featureList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-bottom: 1.75rem;
+}
+
+.featureItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  font-size: 0.85rem;
+  color: #e2e8f0;
+  line-height: 1.45;
+}
+
+.featureIconWrap {
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+  color: #f5a623;
+}
+
+/* Interactive Action Buttons inside Stage Card */
+.interactiveActionRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.actionButtonPrimary {
+  background: linear-gradient(135deg, #f5a623 0%, #e09315 100%);
+  color: #060914;
+  font-weight: 700;
+  font-size: 0.82rem;
+  padding: 0.65rem 1.25rem;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 15px rgba(245, 166, 35, 0.3);
+}
+
+.actionButtonPrimary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(245, 166, 35, 0.45);
+}
+
+.actionButtonSecondary {
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.82rem;
+  padding: 0.65rem 1.15rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.actionButtonSecondary:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Floating interactive HUD toast/status alert */
+.simulatedToast {
+  margin-top: 0.85rem;
+  padding: 0.6rem 0.85rem;
+  border-radius: 12px;
+  background: rgba(13, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #34d399;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  animation: toastFadeIn 0.3s ease;
+}
+
+@keyframes toastFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* -------------------------------------------------------------------------
+   Scroll Progress Track Bar (Right Side Vertical Line)
+   ------------------------------------------------------------------------- */
+.verticalProgressRail {
+  position: absolute;
+  right: 2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 200px;
+  width: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 9999px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.verticalProgressBar {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  background: linear-gradient(to bottom, #1a2ba6, #f5a623);
+  border-radius: 9999px;
+  transition: height 0.1s linear;
+}
+
+.railDot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #1e293b;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  z-index: 2;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.railDotActive {
+  background: #f5a623;
+  border-color: #ffffff;
+  transform: scale(1.4);
+  box-shadow: 0 0 12px #f5a623;
+}
+
+/* -------------------------------------------------------------------------
+   Responsive adjustments
+   ------------------------------------------------------------------------- */
+@media (max-width: 1024px) {
+  .stageCardWrapper {
+    max-width: 440px;
+  }
+  .stageTitle {
+    font-size: 1.65rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .stageContentOverlay {
+    padding: 0 1.25rem;
+    align-items: flex-end;
+    bottom: 4.5rem;
+  }
+  .stageCardWrapper {
+    max-width: 100%;
+  }
+  .stageGlassCard {
+    padding: 1.4rem;
+    border-radius: 18px;
+  }
+  .stageTitle {
+    font-size: 1.35rem;
+  }
+  .stageDescription {
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+  }
+  .hudTopBar {
+    left: 1rem;
+    right: 1rem;
+    top: 1rem;
+  }
+  .hudControlsBottom {
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+  }
+  .verticalProgressRail {
+    display: none;
+  }
+}

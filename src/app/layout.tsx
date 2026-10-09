@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
+import { SceneCanvas } from "./components/SceneCanvas";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -46,7 +47,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${plusJakartaSans.variable}`}>
-      <body>{children}</body>
+      <body>
+        {/* Fixed persistent React Three Fiber Canvas in root layout (never unmounts) */}
+        <SceneCanvas />
+        {children}
+      </body>
     </html>
   );
 }

@@ -1,6 +1,6 @@
 :root {
   /* Brand Palette: Royal Blue & Gold */
-  --color-navy-dark: #050814;
+  --color-navy-dark: #05060D;
   --color-navy-deep: #0D1B7A;
   --color-royal-blue: #1A2BA6;
   --color-royal-light: #2A3FB8;
@@ -11,7 +11,7 @@
   --color-gold-hover: #E09315;
   
   /* Neutral Palette */
-  --color-bg-dark: #060914;
+  --color-bg-dark: #05060D;
   --color-surface-dark: rgba(13, 27, 122, 0.2);
   --color-surface-card: rgba(255, 255, 255, 0.05);
   --color-border-subtle: rgba(255, 255, 255, 0.1);
@@ -37,7 +37,7 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
 }
 
 body {

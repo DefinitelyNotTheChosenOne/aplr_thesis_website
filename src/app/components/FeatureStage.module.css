@@ -1,0 +1,891 @@
+/* =========================================================================
+   INTELLIGATE PINNED FEATURE SECTION - CONTINUOUS SCROLLYTELLING
+   Base Color: #05060D | Accent Colors: #5B5BF0, #22C55E, #F5A623
+   ========================================================================= */
+
+.stageRunway {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  min-height: 100vh;
+  background: transparent;
+  z-index: 5;
+  overflow: visible;
+}
+
+.stickyViewport {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0 4vw;
+  box-sizing: border-box;
+}
+
+/* Subtle dark gradient backdrop behind text for 100% legibility */
+.textBackdropGlow {
+  position: absolute;
+  top: 50%;
+  left: 20%;
+  transform: translate(-50%, -50%);
+  width: 580px;
+  height: 580px;
+  background: radial-gradient(circle, rgba(5, 6, 13, 0.95) 0%, rgba(5, 6, 13, 0.6) 55%, transparent 75%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* -------------------------------------------------------------------------
+   Top Center Pill Tab Bar with ONE Sliding Highlight
+   ------------------------------------------------------------------------- */
+.tabBarWrap {
+  position: absolute;
+  top: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+}
+
+.tabBar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: rgba(13, 17, 34, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 4px;
+  border-radius: 9999px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.tabHighlight {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc((100% - 8px) / 3);
+  border-radius: 9999px;
+  background: linear-gradient(135deg, rgba(91, 91, 240, 0.35), rgba(91, 91, 240, 0.15));
+  border: 1px solid rgba(91, 91, 240, 0.6);
+  box-shadow: 0 0 16px rgba(91, 91, 240, 0.4);
+  pointer-events: none;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, background 0.3s ease;
+}
+
+.tabBtn {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: transparent;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  white-space: nowrap;
+}
+
+.tabBtn:hover {
+  color: #ffffff;
+}
+
+.tabBtnActive {
+  color: #ffffff;
+}
+
+/* -------------------------------------------------------------------------
+   Stage Content Grid: ONE Text Column + ONE Window Card
+   ------------------------------------------------------------------------- */
+.stageGrid {
+  position: relative;
+  z-index: 5;
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  gap: 60px;
+  align-items: center;
+  max-width: 1360px;
+  width: 100%;
+}
+
+/* -------------------------------------------------------------------------
+   LEFT: Persistent Text Column
+   ------------------------------------------------------------------------- */
+.textColumn {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.labelRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  font-family: monospace;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #f5a623;
+}
+
+.counterMask {
+  overflow: hidden;
+  height: 1.3em;
+  display: inline-block;
+}
+
+.counterRoll {
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.counterRoll span {
+  height: 1.3em;
+  display: flex;
+  align-items: center;
+}
+
+.labelTextMask {
+  overflow: hidden;
+  height: 1.3em;
+  display: inline-block;
+  position: relative;
+}
+
+.labelLine {
+  display: block;
+}
+
+.labelDivider {
+  width: 36px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.6;
+}
+
+.headlineWrap {
+  margin-bottom: 20px;
+  font-size: clamp(2.3rem, 3.8vw, 3.6rem);
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+  color: #ffffff;
+}
+
+.wordMask {
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.gradientWord {
+  background: linear-gradient(135deg, #a78bfa 0%, #f5a623 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.descMask {
+  position: relative;
+  min-height: 84px;
+  margin-bottom: 28px;
+  overflow: hidden;
+}
+
+.descLine {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  font-size: 1.05rem;
+  color: #94a3b8;
+  line-height: 1.7;
+  font-weight: 300;
+}
+
+.checklistWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 30px;
+  min-height: 160px;
+}
+
+.checklistItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 0.92rem;
+  color: #cbd5e1;
+  line-height: 1.5;
+}
+
+.checkIconBox {
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  background: rgba(91, 91, 240, 0.15);
+  border: 1px solid rgba(91, 91, 240, 0.35);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #818cf8;
+  margin-top: 2px;
+}
+
+.techTagsContainer {
+  position: relative;
+  min-height: 38px;
+  margin-bottom: 28px;
+}
+
+.techTagRow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
+}
+
+.techTag {
+  padding: 5px 14px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: monospace;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #cbd5e1;
+}
+
+.techTagGreen {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.3);
+  color: #86efac;
+}
+
+.techTagGold {
+  background: rgba(245, 166, 35, 0.1);
+  border-color: rgba(245, 166, 35, 0.3);
+  color: #fcd34d;
+}
+
+.actionsContainer {
+  position: relative;
+  min-height: 48px;
+}
+
+.actionRow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.btnPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 22px;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: linear-gradient(135deg, #5b5bf0, #4338ca);
+  color: #ffffff;
+  border: 1px solid rgba(91, 91, 240, 0.5);
+  box-shadow: 0 4px 18px rgba(91, 91, 240, 0.35);
+  transition: all 0.25s ease;
+}
+
+.btnPrimary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(91, 91, 240, 0.5);
+}
+
+.btnSecondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 20px;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.05);
+  color: #cbd5e1;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  transition: all 0.25s ease;
+}
+
+.btnSecondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* -------------------------------------------------------------------------
+   RIGHT: Persistent macOS-Style Window Frame
+   ------------------------------------------------------------------------- */
+.windowFrameWrap {
+  position: relative;
+  width: 100%;
+  max-width: 580px;
+  margin: 0 auto;
+  perspective: 1200px;
+}
+
+.windowFrame {
+  position: relative;
+  background: #090d1f;
+  border-radius: 20px;
+  padding: 18px 20px 22px;
+  border: 1px solid rgba(91, 91, 240, 0.35);
+  box-shadow: 
+    0 0 0 1px rgba(91, 91, 240, 0.15),
+    0 24px 64px rgba(0, 0, 0, 0.7),
+    0 0 80px rgba(91, 91, 240, 0.25);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.windowTopbar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.trafficDots {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.dotRed { width: 10px; height: 10px; border-radius: 50%; background: #ff5f57; }
+.dotYellow { width: 10px; height: 10px; border-radius: 50%; background: #febc2e; }
+.dotGreen { width: 10px; height: 10px; border-radius: 50%; background: #28c840; }
+
+.titleFilename {
+  flex: 1;
+  text-align: center;
+  font-family: monospace;
+  font-size: 0.78rem;
+  color: #64748b;
+  letter-spacing: 0.5px;
+}
+
+.realScreenshotBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  background: rgba(245, 166, 35, 0.12);
+  border: 1px solid rgba(245, 166, 35, 0.35);
+  color: #ffc84a;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.realScreenshotBadge:hover {
+  background: rgba(245, 166, 35, 0.22);
+}
+
+/* The three screens are stacked in the same position */
+.screensContainer {
+  position: relative;
+  width: 100%;
+  min-height: 380px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #050711;
+}
+
+.screenLayer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: 16px;
+  border-radius: 12px;
+  background: #050711;
+  will-change: clip-path, opacity;
+}
+
+/* Shared traveling plate chip */
+.travelingPlateChip {
+  position: absolute;
+  z-index: 10;
+  font-family: monospace;
+  font-weight: 800;
+  letter-spacing: 2px;
+  background: rgba(245, 166, 35, 0.18);
+  border: 1.5px solid #f5a623;
+  color: #f5a623;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 20px rgba(245, 166, 35, 0.35);
+  will-change: transform, left, top, width, height;
+}
+
+/* -------------------------------------------------------------------------
+   SCREEN 1: USER MOBILE APP
+   ------------------------------------------------------------------------- */
+.userHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.userAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #5b5bf0, #1e1b4b);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: #ffffff;
+  border: 1px solid rgba(91, 91, 240, 0.4);
+}
+
+.userGreeting {
+  flex: 1;
+}
+
+.userName {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.userSubtitle {
+  font-size: 0.72rem;
+  color: #94a3b8;
+}
+
+.userStatsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.statCard {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 14px;
+  position: relative;
+  min-height: 90px;
+}
+
+.statLabel {
+  font-size: 0.72rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.statSubtext {
+  font-size: 0.68rem;
+  color: #64748b;
+  margin-top: 36px;
+  font-family: monospace;
+}
+
+.statusPill {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 800;
+  font-family: monospace;
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  color: #4ade80;
+}
+
+.chartCard {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.chartTitle {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #cbd5e1;
+  margin-bottom: 12px;
+}
+
+.chartBars {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  height: 80px;
+}
+
+.bar {
+  flex: 1;
+  background: rgba(91, 91, 240, 0.35);
+  border-radius: 4px;
+  transform-origin: bottom center;
+  will-change: transform;
+}
+
+.barActive {
+  background: linear-gradient(to top, #5b5bf0, #818cf8);
+}
+
+/* -------------------------------------------------------------------------
+   SCREEN 2: ADMIN SECURITY TABLE
+   ------------------------------------------------------------------------- */
+.adminLayout {
+  display: flex;
+  gap: 14px;
+  height: 100%;
+}
+
+.adminSidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 8px 6px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.navIcon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+.navIconActive {
+  background: rgba(34, 197, 94, 0.18);
+  color: #4ade80;
+}
+
+.adminMain {
+  flex: 1;
+}
+
+.adminHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.adminTitle {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.barrierBadge {
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: 700;
+  font-family: monospace;
+  background: rgba(34, 197, 94, 0.18);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  color: #4ade80;
+}
+
+.adminSub {
+  font-size: 0.7rem;
+  color: #64748b;
+  margin-bottom: 12px;
+}
+
+.adminTable {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tableHeader {
+  display: grid;
+  grid-template-columns: 100px 1fr 100px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #64748b;
+  padding: 6px 10px;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.tableRow {
+  display: grid;
+  grid-template-columns: 100px 1fr 100px;
+  align-items: center;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  font-size: 0.78rem;
+  will-change: transform, opacity;
+}
+
+.cellPlatePlaceholder {
+  /* Empty slot where the traveling plate chip lands */
+  height: 22px;
+}
+
+.cellOwner {
+  color: #94a3b8;
+  font-family: monospace;
+}
+
+.badgeInside {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+}
+
+.badgeCleared {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+}
+
+.badgePending {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  background: rgba(245, 166, 35, 0.15);
+  color: #ffc84a;
+}
+
+/* -------------------------------------------------------------------------
+   SCREEN 3: YOLOv11 VISION & TERMINAL
+   ------------------------------------------------------------------------- */
+.yoloViewport {
+  position: relative;
+  height: 190px;
+  border-radius: 10px;
+  background: #020308;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cctvGrid {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(245, 166, 35, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245, 166, 35, 0.05) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.cctvHeader {
+  position: absolute;
+  top: 8px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.68rem;
+  font-family: monospace;
+  color: #64748b;
+  z-index: 2;
+}
+
+.laserScanLine {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #f5a623 50%, transparent);
+  box-shadow: 0 0 12px #f5a623;
+  z-index: 5;
+  pointer-events: none;
+  will-change: top;
+}
+
+.bboxPerson {
+  position: absolute;
+  top: 25px;
+  left: 30px;
+  width: 90px;
+  height: 140px;
+  border: 1.5px dashed rgba(56, 189, 248, 0.7);
+  border-radius: 4px;
+  background: rgba(56, 189, 248, 0.06);
+}
+
+.bboxLabelBlue {
+  position: absolute;
+  top: -16px;
+  left: 0;
+  font-size: 0.65rem;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: #38bdf8;
+  color: #000000;
+  font-weight: 700;
+  font-family: monospace;
+}
+
+.bboxPlateCrop {
+  position: absolute;
+  bottom: 25px;
+  right: 35px;
+  width: 100px;
+  height: 50px;
+  border: 1.5px solid rgba(168, 85, 247, 0.7);
+  border-radius: 4px;
+  background: rgba(168, 85, 247, 0.06);
+}
+
+.bboxLabelPurple {
+  position: absolute;
+  top: -16px;
+  left: 0;
+  font-size: 0.65rem;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: #a855f7;
+  color: #ffffff;
+  font-weight: 700;
+  font-family: monospace;
+}
+
+.yoloTerminal {
+  background: #020308;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-family: monospace;
+  font-size: 0.72rem;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: #94a3b8;
+  min-height: 120px;
+}
+
+.terminalLine {
+  will-change: opacity, transform;
+}
+
+.typingCursor {
+  display: inline-block;
+  width: 6px;
+  height: 12px;
+  background: #4ade80;
+  margin-left: 4px;
+  vertical-align: middle;
+  animation: blinkCursor 0.8s infinite;
+}
+
+@keyframes blinkCursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* -------------------------------------------------------------------------
+   Reduced Motion: Simple Stacked List
+   ------------------------------------------------------------------------- */
+.reducedMotionContainer {
+  padding: 80px 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 80px;
+}
+
+.reducedMotionStep {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: center;
+}
+
+/* -------------------------------------------------------------------------
+   Responsive: Mobile (Single column: text above, window below)
+   ------------------------------------------------------------------------- */
+@media (max-width: 968px) {
+  .stageGrid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .stickyViewport {
+    padding: 20px 16px;
+    height: auto;
+    min-height: 100vh;
+  }
+  .tabBarWrap {
+    top: 14px;
+  }
+  .tabBtn {
+    padding: 6px 12px;
+    font-size: 0.72rem;
+  }
+  .headlineWrap {
+    font-size: 2.1rem;
+  }
+  .descMask {
+    min-height: 100px;
+  }
+  .checklistWrap {
+    min-height: 180px;
+  }
+  .windowFrameWrap {
+    max-width: 100%;
+  }
+}
