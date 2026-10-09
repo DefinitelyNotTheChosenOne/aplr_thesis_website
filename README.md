@@ -204,4 +204,5 @@ aplr_thesis_website/
 This project was developed as an undergraduate capstone thesis research project by BSCPE 4A students at Dr. Yanga's Colleges Inc. All rights reserved by the student researchers and affiliated academic institution.
 
 For inquiries, academic citations, or demonstrations, please open an issue in this repository or contact the research team.#   i n t e l l i t h r e e  
+ #   i n t e l l i t h r e e  
  
