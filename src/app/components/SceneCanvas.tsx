@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useRef, useMemo, useEffect } from "react";
+import React, { useRef, useMemo, useEffect, Suspense } from "react";
 import * as THREE from "three";
 import { useFrame, useThree } from "@react-three/fiber";
-import { Html } from "@react-three/drei";
+import { Html, Environment } from "@react-three/drei";
 import { ScreenUser } from "./ScreenUser";
 import { ScreenAdmin } from "./ScreenAdmin";
 import { ScreenYolo } from "./ScreenYolo";
@@ -136,7 +136,7 @@ export interface SceneCanvasProps {
   onScrollReady?: (el: HTMLElement) => void;
 }
 
-export function SceneCanvas({
+export const SceneCanvas = React.memo(function SceneCanvas({
   progressRef,
   textRef1,
   textRef2,
@@ -155,7 +155,6 @@ export function SceneCanvas({
 
   // 3D Objects and Materials Refs
   const groupRef = useRef<THREE.Group>(null);
-  const borderMatRef = useRef<THREE.LineBasicMaterial>(null);
   const glowMatRef = useRef<THREE.MeshBasicMaterial>(null);
   const gridMatRef = useRef<THREE.LineBasicMaterial>(null);
   const accentLightRef = useRef<THREE.PointLight>(null);
@@ -171,8 +170,56 @@ export function SceneCanvas({
   // Track previous active stage to notify parent callback only on changes
   const prevStageRef = useRef<0 | 1 | 2>(0);
 
+  // Mathematically centered unibody chassis geometry (strictly centered at [0, 0, 0])
+  // Guaranteed zero offset across all 3 axes, eliminating detachment and orbital swing
+  const chassisGeometry = useMemo(() => {
+    const width = 3.12;
+    const height = 2.26;
+    const depth = 0.14;
+    const radius = 0.08;
+    const bevelSize = 0.02;
+    const smoothness = 8;
 
+    const shape = new THREE.Shape();
+    const innerW = width - bevelSize * 2;
+    const innerH = height - bevelSize * 2;
+    const r = radius - bevelSize;
+    const x = -innerW / 2;
+    const y = -innerH / 2;
 
+    shape.moveTo(x + r, y);
+    shape.lineTo(x + innerW - r, y);
+    shape.quadraticCurveTo(x + innerW, y, x + innerW, y + r);
+    shape.lineTo(x + innerW, y + innerH - r);
+    shape.quadraticCurveTo(x + innerW, y + innerH, x + innerW - r, y + innerH);
+    shape.lineTo(x + r, y + innerH);
+    shape.quadraticCurveTo(x, y + innerH, x, y + innerH - r);
+    shape.lineTo(x, y + r);
+    shape.quadraticCurveTo(x, y, x + r, y);
+
+    const extrudeSettings = {
+      depth: depth - bevelSize * 2,
+      bevelEnabled: true,
+      bevelSegments: smoothness,
+      steps: 1,
+      bevelSize: bevelSize,
+      bevelThickness: bevelSize,
+      curveSegments: smoothness * 2,
+    };
+
+    const geom = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+    // Translate Z so that geometric center is at z = 0,
+    // front face is at +depth / 2 (+0.07), back face is at -depth / 2 (-0.07)
+    geom.translate(0, 0, -depth / 2 + bevelSize);
+    geom.computeVertexNormals();
+    return geom;
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      chassisGeometry.dispose();
+    };
+  }, [chassisGeometry]);
   // Cyberpunk starfield particles
   const particleCount = useMemo(() => {
     if (typeof window !== "undefined" && window.innerWidth < 768) return 400;
@@ -201,7 +248,7 @@ export function SceneCanvas({
     currentOffsetRef.current = THREE.MathUtils.damp(
       currentOffsetRef.current,
       targetOffset,
-      8,
+      7.0,
       delta
     );
     const offset = Math.max(0, Math.min(1, currentOffsetRef.current));
@@ -271,63 +318,78 @@ export function SceneCanvas({
       targetScale = THREE.MathUtils.lerp(baseScale, baseScale * 1.15, s); // Scaled up
     } else {
       // Transition from Stage 2 to Stage 3:
-      // Container tilts back dramatically into a hero perspective
+      // Sleek hero perspective - balanced cinematic tilt keeping UI flush and locked
       const t = Math.min(1, (offset - 0.66) / 0.34);
       const s = t * t * (3 - 2 * t);
 
       const kf2Y = isMobile ? 0.22 : -0.34;
       const kf2X = isMobile ? 0 : rightBaseX - 0.12;
-      const kf3Y = isMobile ? 0.35 : 0.18; // Elevated hero stance
+      const kf3Y = isMobile ? 0.35 : 0.04;
 
       targetX = THREE.MathUtils.lerp(kf2X, rightBaseX, s);
       targetY = THREE.MathUtils.lerp(kf2Y, kf3Y, s);
-      targetZ = THREE.MathUtils.lerp(0.52, 0.1, s);
-      targetRotX = THREE.MathUtils.lerp(-0.06, -0.42, s); // Dramatic backward tilt
-      targetRotY = THREE.MathUtils.lerp(0.38, -0.14, s);
-      targetRotZ = THREE.MathUtils.lerp(-0.03, 0.04, s);
+      targetZ = THREE.MathUtils.lerp(0.52, 0.14, s);
+      targetRotX = THREE.MathUtils.lerp(-0.06, -0.18, s); // Refined -10° hero tilt
+      targetRotY = THREE.MathUtils.lerp(0.38, -0.16, s);
+      targetRotZ = THREE.MathUtils.lerp(-0.03, 0.02, s);
       targetScale = THREE.MathUtils.lerp(
         baseScale * 1.15,
-        baseScale * 1.06,
+        baseScale * 1.05,
         s
       );
     }
 
-    // Silky lerp for buttery smooth transitions between keyframes
-    const lerpFactor = 0.085;
+    // -----------------------------------------------------------------------
+    // Unified Physical Mass & Damping (Equal inertia across all axes prevents detachment)
+    // -----------------------------------------------------------------------
+    const dampLambda = 6.0;
+
     if (groupRef.current) {
-      groupRef.current.position.x = THREE.MathUtils.lerp(
+      groupRef.current.position.x = THREE.MathUtils.damp(
         groupRef.current.position.x,
         targetX,
-        lerpFactor
+        dampLambda,
+        delta
       );
-      groupRef.current.position.y = THREE.MathUtils.lerp(
+      groupRef.current.position.y = THREE.MathUtils.damp(
         groupRef.current.position.y,
         targetY,
-        lerpFactor
+        dampLambda,
+        delta
       );
-      groupRef.current.position.z = THREE.MathUtils.lerp(
+      groupRef.current.position.z = THREE.MathUtils.damp(
         groupRef.current.position.z,
         targetZ,
-        lerpFactor
+        dampLambda,
+        delta
       );
-      groupRef.current.rotation.x = THREE.MathUtils.lerp(
+
+      groupRef.current.rotation.x = THREE.MathUtils.damp(
         groupRef.current.rotation.x,
         targetRotX,
-        lerpFactor
+        dampLambda,
+        delta
       );
-      groupRef.current.rotation.y = THREE.MathUtils.lerp(
+      groupRef.current.rotation.y = THREE.MathUtils.damp(
         groupRef.current.rotation.y,
         targetRotY,
-        lerpFactor
+        dampLambda,
+        delta
       );
-      groupRef.current.rotation.z = THREE.MathUtils.lerp(
+      groupRef.current.rotation.z = THREE.MathUtils.damp(
         groupRef.current.rotation.z,
         targetRotZ,
-        lerpFactor
+        dampLambda,
+        delta
       );
+
+      const currentScale = groupRef.current.scale.x;
       groupRef.current.scale.setScalar(
-        THREE.MathUtils.lerp(groupRef.current.scale.x, targetScale, lerpFactor)
+        THREE.MathUtils.damp(currentScale, targetScale, dampLambda, delta)
       );
+
+      // Immediately sync matrixWorld across group and all children
+      groupRef.current.updateMatrixWorld(true);
     }
 
     // -----------------------------------------------------------------------
@@ -410,9 +472,6 @@ export function SceneCanvas({
     if (accentLightRef.current) {
       accentLightRef.current.color.copy(currentColor);
     }
-    if (borderMatRef.current) {
-      borderMatRef.current.color.copy(currentColor);
-    }
     if (glowMatRef.current) {
       glowMatRef.current.color.copy(currentColor);
     }
@@ -436,17 +495,21 @@ export function SceneCanvas({
       <color attach="background" args={["#05060D"]} />
       <fog attach="fog" args={["#05060D", 8, 26]} />
 
-      {/* Dynamic 3D Scene Lighting */}
-      <ambientLight intensity={0.65} />
-      <directionalLight position={[5, 6, 5]} intensity={1.4} />
+      {/* Dynamic 3D Scene Lighting & HDRI Reflections */}
+      <Suspense fallback={null}>
+        <Environment preset="city" />
+      </Suspense>
+
+      <ambientLight intensity={0.55} />
+      <directionalLight position={[5, 6, 5]} intensity={1.6} />
       <pointLight
         ref={accentLightRef}
         position={[2, 1, 3]}
-        intensity={2.6}
+        intensity={2.8}
         distance={20}
       />
       {/* Rim light to highlight physical chamfer edges */}
-      <pointLight position={[-3, -2, -2]} intensity={0.8} color="#ffffff" />
+      <pointLight position={[-3.5, -2, -2]} intensity={1.2} color="#8da2fb" />
 
       {/* Cyberpunk Ambient Starfield */}
       <points ref={particlesRef}>
@@ -484,33 +547,9 @@ export function SceneCanvas({
           ROTATING 3D GROUP (Parent container with 3D backdrop & HTML screens)
           =================================================================== */}
       <group ref={groupRef} position={[1.45, -0.05, -0.05]}>
-        {/* 1. Sleek 3D Device Backdrop Mesh (Dark Physical Chamfered Box) */}
-        <mesh position={[0, 0, -0.045]}>
-          <boxGeometry args={[2.98, 2.16, 0.08]} />
-          <meshPhysicalMaterial
-            color="#060919"
-            roughness={0.16}
-            metalness={0.92}
-            clearcoat={0.65}
-            clearcoatRoughness={0.1}
-            reflectivity={0.95}
-          />
-        </mesh>
-
-        {/* 2. Chamfered Edge Line Accents (Glowing Card Border) */}
-        <lineSegments position={[0, 0, -0.045]}>
-          <edgesGeometry args={[new THREE.BoxGeometry(2.98, 2.16, 0.08)]} />
-          <lineBasicMaterial
-            ref={borderMatRef}
-            color="#5b5bf0"
-            transparent
-            opacity={0.65}
-          />
-        </lineSegments>
-
-        {/* 3. Soft Diffuse Aura Glow Behind the Device */}
-        <mesh position={[0, 0, -0.09]}>
-          <planeGeometry args={[3.25, 2.45]} />
+        {/* 1. Soft Diffuse Aura Glow Behind the Device Chassis */}
+        <mesh position={[0, 0, -0.075]}>
+          <planeGeometry args={[3.35, 2.5]} />
           <meshBasicMaterial
             ref={glowMatRef}
             color="#5b5bf0"
@@ -521,13 +560,31 @@ export function SceneCanvas({
           />
         </mesh>
 
-        {/* 4. Projected HTML UI Screens adhering to 3D Rotation & Perspective */}
+        {/* 2. Physical Precision Beveled Chassis (Oryzo-tier Chamfered & Beveled Container) */}
+        <mesh
+          geometry={chassisGeometry}
+          position={[0, 0, 0]}
+          castShadow
+          receiveShadow
+        >
+          <meshPhysicalMaterial
+            color="#0c101d"
+            metalness={0.65}
+            roughness={0.18}
+            clearcoat={0.85}
+            clearcoatRoughness={0.12}
+            reflectivity={0.9}
+            envMapIntensity={1.5}
+          />
+        </mesh>
+
+        {/* 3. Projected HTML UI Screens locked directly to the front face of the chassis */}
         <Html
           transform
           center
           portal={portalRef}
           distanceFactor={2.0}
-          position={[0, 0, 0.005]}
+          position={[0, 0, 0.072]}
           style={{
             width: "580px",
             height: "410px",
@@ -700,6 +757,6 @@ export function SceneCanvas({
       </group>
     </>
   );
-}
+});
 
 export default SceneCanvas;
