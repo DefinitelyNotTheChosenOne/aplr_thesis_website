@@ -6,19 +6,19 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ThreeScrollShowcase } from "./components/ThreeScrollShowcase";
 import { setLenis, getLenis } from "./lib/lenis";
-import { useStageStore } from "./store/useStageStore";
 import styles from "./page.module.css";
-import { Download, ArrowRight, ArrowUp } from "lucide-react";
+import { Download, ArrowUp } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function Home(): React.JSX.Element {
   const lenisRef = useRef<Lenis | null>(null);
+  const progressBarRef = useRef<HTMLDivElement | null>(null);
 
   // Wire Lenis smooth scroll to GSAP ScrollTrigger
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 1.2,
+      duration: 1.15,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: "vertical",
       gestureOrientation: "vertical",
@@ -38,12 +38,16 @@ export default function Home(): React.JSX.Element {
     gsap.ticker.add(tickerCallback);
     gsap.ticker.lagSmoothing(0);
 
-    // Document-level ScrollTrigger to continuously update pageProgress in Zustand store
+    // Drive top progress bar directly via DOM ref (0 React/Zustand re-renders)
     const pageTrigger = ScrollTrigger.create({
       trigger: document.documentElement,
       start: "top top",
       end: "bottom bottom",
-      onUpdate: (s) => useStageStore.getState().setStageState({ pageProgress: s.progress }),
+      onUpdate: (s) => {
+        if (progressBarRef.current) {
+          progressBarRef.current.style.width = `${(s.progress * 100).toFixed(2)}%`;
+        }
+      },
     });
 
     const refreshTimer = setTimeout(() => {
@@ -59,16 +63,6 @@ export default function Home(): React.JSX.Element {
     };
   }, []);
 
-  const scrollToStage = () => {
-    const lenis = getLenis();
-    const el = document.getElementById("three-scroll-showcase") || document.getElementById("feature-stage");
-    if (lenis && el) {
-      lenis.scrollTo(el);
-    } else {
-      el?.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
   const scrollToTop = () => {
     const lenis = getLenis();
     if (lenis) {
@@ -80,76 +74,33 @@ export default function Home(): React.JSX.Element {
 
   return (
     <main className={styles.mainWrapper}>
-      {/* ===================================================================
-          1. HERO SECTION (100vh)
-          =================================================================== */}
-      <section className={styles.heroSection} id="section-hero">
-        <div className={styles.heroBadge}>
-          <span className={styles.badgeDot} />
-          <span>Dr. Yanga&apos;s Colleges Inc. • BSCPE 4A Capstone</span>
-        </div>
-
-        <h1 className={styles.heroTitle}>
-          Campus Access <br />
-          <span className={styles.heroTitleGradient}>Has Never Been Smoother</span>
-        </h1>
-
-        <p className={styles.heroSubtitle}>
-          An Edge-AI License Plate Recognition and Vehicle Registration Portal for
-          Automated Campus Security. Featuring real-time Flutter mobile pass sync,
-          security guard stations, and sub-second YOLOv11s computer vision.
-        </p>
-
-        <div className={styles.heroActions}>
-          <button
-            type="button"
-            className={styles.btnGold}
-            onClick={scrollToStage}
-            aria-label="Explore System Stories"
-          >
-            <span>Explore System</span>
-            <ArrowRight size={18} />
-          </button>
-          <a
-            href="https://drive.google.com/drive/folders/119sLWwebH6a5DMppAmZeSClt8jMkla7V?usp=sharing"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.btnSecondary}
-            aria-label="Download App on Google Drive"
-          >
-            <span>Download App</span>
-            <Download size={18} />
-          </a>
-        </div>
-
-        <div
-          className={styles.scrollIndicator}
-          onClick={scrollToStage}
-          role="button"
-          tabIndex={0}
-          aria-label="Scroll to explore"
-        >
-          <span className={styles.scrollIndicatorText}>Scroll to explore</span>
-          <div className={styles.scrollLine} />
-        </div>
-      </section>
+      {/* Top Scroll Progress Bar */}
+      <div
+        ref={progressBarRef}
+        className={styles.progressBar}
+        style={{ width: "0%" }}
+        aria-hidden="true"
+      />
 
       {/* ===================================================================
-          2. 3D WEBGL HARDWARE-ACCELERATED SCROLL SHOWCASE (Three.js + R3F + Drei)
-          Hardware-accelerated 3D device card rotation & embedded screens:
-          01 User App -> 02 Admin Side -> 03 YOLOv11 AI
+          1. UNIFIED 4-STAGE 3D WEBGL SHOWCASE (400vh)
+          Stage 00: Hero (3D Screen in Middle + Left/Right Hero Wings)
+          Stage 01: User App (3D Glides Right + Left User Description)
+          Stage 02: Admin Side (3D Rotates + Left Admin Description)
+          Stage 03: YOLOv11 AI (3D Tilts + Left YOLO Description)
           =================================================================== */}
       <ThreeScrollShowcase />
 
       {/* ===================================================================
-          3. FINAL CTA SECTION (Exact Match to User Screenshot!)
+          2. FINAL CTA SECTION
           "Experience the Future of Campus Security"
           =================================================================== */}
       <section className={styles.finalCtaSection} id="section-final">
         <div className={styles.finalCtaWrapper}>
           <h2 className={styles.finalCtaTitle}>
             Experience the Future <br />
-            of Campus <span className={styles.finalCtaSecurityGradient}>Security</span>
+            of Campus{" "}
+            <span className={styles.finalCtaSecurityGradient}>Security</span>
           </h2>
 
           <p className={styles.finalCtaSubtitle}>

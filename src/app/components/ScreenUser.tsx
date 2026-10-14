@@ -2,8 +2,24 @@
 
 import React, { forwardRef } from "react";
 
+const BADGE_SURFACE_INDIGO: React.CSSProperties = {
+  background: "linear-gradient(145deg, rgba(13, 18, 40, 0.96), rgba(8, 11, 26, 0.96))",
+  border: "1.5px solid rgba(91, 91, 240, 0.45)",
+  borderRadius: "16px",
+  padding: "16px 22px",
+  boxShadow: "0 12px 30px rgba(0, 0, 0, 0.55)",
+};
+
+const BADGE_SURFACE_GREEN: React.CSSProperties = {
+  background: "linear-gradient(145deg, rgba(13, 18, 40, 0.96), rgba(8, 11, 26, 0.96))",
+  border: "1.5px solid rgba(34, 197, 94, 0.45)",
+  borderRadius: "16px",
+  padding: "16px 22px",
+  boxShadow: "0 12px 30px rgba(0, 0, 0, 0.55)",
+};
+
 export const ScreenUser = forwardRef<HTMLDivElement, { isVisible?: boolean }>(
-  function ScreenUser({ isVisible = true }, ref) {
+  function ScreenUser(_props, ref) {
     return (
       <div
         ref={ref}
@@ -22,7 +38,7 @@ export const ScreenUser = forwardRef<HTMLDivElement, { isVisible?: boolean }>(
           boxSizing: "border-box",
         }}
       >
-        {/* Subtle Ambient Left Info Badges */}
+        {/* Left Info Badges */}
         <div
           style={{
             position: "absolute",
@@ -36,38 +52,49 @@ export const ScreenUser = forwardRef<HTMLDivElement, { isVisible?: boolean }>(
             zIndex: 2,
           }}
         >
-          <div
-            style={{
-              background: "rgba(10, 14, 30, 0.85)",
-              border: "1.5px solid rgba(91, 91, 240, 0.4)",
-              borderRadius: "16px",
-              padding: "16px 22px",
-              backdropFilter: "blur(12px)",
-              boxShadow: "0 12px 30px rgba(0, 0, 0, 0.5)",
-            }}
-          >
-            <div style={{ fontSize: "1.1rem", color: "#94a3b8", fontFamily: "monospace", letterSpacing: "1px" }}>
+          <div style={BADGE_SURFACE_INDIGO}>
+            <div
+              style={{
+                fontSize: "1.1rem",
+                color: "#94a3b8",
+                fontFamily: "monospace",
+                letterSpacing: "1px",
+              }}
+            >
               PORTAL APP
             </div>
-            <div style={{ fontSize: "1.6rem", fontWeight: 700, color: "#818cf8", marginTop: "4px" }}>
+            <div
+              style={{
+                fontSize: "1.6rem",
+                fontWeight: 700,
+                color: "#818cf8",
+                marginTop: "4px",
+              }}
+            >
               Flutter UI
             </div>
           </div>
-          <div
-            style={{
-              background: "rgba(10, 14, 30, 0.85)",
-              border: "1.5px solid rgba(91, 91, 240, 0.4)",
-              borderRadius: "16px",
-              padding: "16px 22px",
-              backdropFilter: "blur(12px)",
-              boxShadow: "0 12px 30px rgba(0, 0, 0, 0.5)",
-            }}
-          >
-            <div style={{ fontSize: "1.1rem", color: "#94a3b8", fontFamily: "monospace", letterSpacing: "1px" }}>
+
+          <div style={BADGE_SURFACE_INDIGO}>
+            <div
+              style={{
+                fontSize: "1.1rem",
+                color: "#94a3b8",
+                fontFamily: "monospace",
+                letterSpacing: "1px",
+              }}
+            >
               USER CREDENTIAL
             </div>
-            <div style={{ fontSize: "1.5rem", fontWeight: 700, color: "#f8fafc", marginTop: "4px" }}>
-              test123 • Student
+            <div
+              style={{
+                fontSize: "1.5rem",
+                fontWeight: 700,
+                color: "#f8fafc",
+                marginTop: "4px",
+              }}
+            >
+              BSCPE 4A • Student
             </div>
           </div>
         </div>
@@ -120,37 +147,49 @@ export const ScreenUser = forwardRef<HTMLDivElement, { isVisible?: boolean }>(
             zIndex: 2,
           }}
         >
-          <div
-            style={{
-              background: "rgba(10, 14, 30, 0.85)",
-              border: "1.5px solid rgba(91, 91, 240, 0.4)",
-              borderRadius: "16px",
-              padding: "16px 22px",
-              backdropFilter: "blur(12px)",
-              boxShadow: "0 12px 30px rgba(0, 0, 0, 0.5)",
-            }}
-          >
-            <div style={{ fontSize: "1.1rem", color: "#94a3b8", fontFamily: "monospace", letterSpacing: "1px" }}>
+          <div style={BADGE_SURFACE_INDIGO}>
+            <div
+              style={{
+                fontSize: "1.1rem",
+                color: "#94a3b8",
+                fontFamily: "monospace",
+                letterSpacing: "1px",
+              }}
+            >
               PAIRED VEHICLE
             </div>
-            <div style={{ fontSize: "1.6rem", fontWeight: 800, color: "#a5b4fc", letterSpacing: "2px", marginTop: "4px" }}>
+            <div
+              style={{
+                fontSize: "1.6rem",
+                fontWeight: 800,
+                color: "#a5b4fc",
+                letterSpacing: "2px",
+                marginTop: "4px",
+              }}
+            >
               LGJ 910
             </div>
           </div>
-          <div
-            style={{
-              background: "rgba(10, 14, 30, 0.85)",
-              border: "1.5px solid rgba(34, 197, 94, 0.4)",
-              borderRadius: "16px",
-              padding: "16px 22px",
-              backdropFilter: "blur(12px)",
-              boxShadow: "0 12px 30px rgba(0, 0, 0, 0.5)",
-            }}
-          >
-            <div style={{ fontSize: "1.1rem", color: "#94a3b8", fontFamily: "monospace", letterSpacing: "1px" }}>
+
+          <div style={BADGE_SURFACE_GREEN}>
+            <div
+              style={{
+                fontSize: "1.1rem",
+                color: "#94a3b8",
+                fontFamily: "monospace",
+                letterSpacing: "1px",
+              }}
+            >
               CLEARANCE
             </div>
-            <div style={{ fontSize: "1.5rem", fontWeight: 700, color: "#4ade80", marginTop: "4px" }}>
+            <div
+              style={{
+                fontSize: "1.5rem",
+                fontWeight: 700,
+                color: "#4ade80",
+                marginTop: "4px",
+              }}
+            >
               Active Pass
             </div>
           </div>

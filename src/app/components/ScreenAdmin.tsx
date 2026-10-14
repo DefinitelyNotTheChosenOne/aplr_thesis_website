@@ -2,8 +2,24 @@
 
 import React, { forwardRef } from "react";
 
+const BADGE_SURFACE_GREEN: React.CSSProperties = {
+  background: "linear-gradient(145deg, rgba(13, 18, 40, 0.96), rgba(8, 11, 26, 0.96))",
+  border: "1.5px solid rgba(34, 197, 94, 0.45)",
+  borderRadius: "16px",
+  padding: "16px 22px",
+  boxShadow: "0 12px 30px rgba(0, 0, 0, 0.55)",
+};
+
+const BADGE_SURFACE_GOLD: React.CSSProperties = {
+  background: "linear-gradient(145deg, rgba(13, 18, 40, 0.96), rgba(8, 11, 26, 0.96))",
+  border: "1.5px solid rgba(245, 166, 35, 0.48)",
+  borderRadius: "16px",
+  padding: "16px 22px",
+  boxShadow: "0 12px 30px rgba(0, 0, 0, 0.55)",
+};
+
 export const ScreenAdmin = forwardRef<HTMLDivElement, { isVisible?: boolean }>(
-  function ScreenAdmin({ isVisible = true }, ref) {
+  function ScreenAdmin(_props, ref) {
     return (
       <div
         ref={ref}
@@ -22,7 +38,7 @@ export const ScreenAdmin = forwardRef<HTMLDivElement, { isVisible?: boolean }>(
           boxSizing: "border-box",
         }}
       >
-        {/* Ambient Left Badges */}
+        {/* Left Badges */}
         <div
           style={{
             position: "absolute",
@@ -36,37 +52,48 @@ export const ScreenAdmin = forwardRef<HTMLDivElement, { isVisible?: boolean }>(
             zIndex: 2,
           }}
         >
-          <div
-            style={{
-              background: "rgba(10, 14, 30, 0.85)",
-              border: "1.5px solid rgba(34, 197, 94, 0.4)",
-              borderRadius: "16px",
-              padding: "16px 22px",
-              backdropFilter: "blur(12px)",
-              boxShadow: "0 12px 30px rgba(0, 0, 0, 0.5)",
-            }}
-          >
-            <div style={{ fontSize: "1.1rem", color: "#94a3b8", fontFamily: "monospace", letterSpacing: "1px" }}>
+          <div style={BADGE_SURFACE_GREEN}>
+            <div
+              style={{
+                fontSize: "1.1rem",
+                color: "#94a3b8",
+                fontFamily: "monospace",
+                letterSpacing: "1px",
+              }}
+            >
               GUARD STATION
             </div>
-            <div style={{ fontSize: "1.6rem", fontWeight: 700, color: "#4ade80", marginTop: "4px" }}>
+            <div
+              style={{
+                fontSize: "1.6rem",
+                fontWeight: 700,
+                color: "#4ade80",
+                marginTop: "4px",
+              }}
+            >
               Live Dashboard
             </div>
           </div>
-          <div
-            style={{
-              background: "rgba(10, 14, 30, 0.85)",
-              border: "1.5px solid rgba(34, 197, 94, 0.4)",
-              borderRadius: "16px",
-              padding: "16px 22px",
-              backdropFilter: "blur(12px)",
-              boxShadow: "0 12px 30px rgba(0, 0, 0, 0.5)",
-            }}
-          >
-            <div style={{ fontSize: "1.1rem", color: "#94a3b8", fontFamily: "monospace", letterSpacing: "1px" }}>
+
+          <div style={BADGE_SURFACE_GREEN}>
+            <div
+              style={{
+                fontSize: "1.1rem",
+                color: "#94a3b8",
+                fontFamily: "monospace",
+                letterSpacing: "1px",
+              }}
+            >
               CAMPUS OCCUPANCY
             </div>
-            <div style={{ fontSize: "1.5rem", fontWeight: 700, color: "#f8fafc", marginTop: "4px" }}>
+            <div
+              style={{
+                fontSize: "1.5rem",
+                fontWeight: 700,
+                color: "#f8fafc",
+                marginTop: "4px",
+              }}
+            >
               1 Vehicle Inside
             </div>
           </div>
@@ -106,7 +133,7 @@ export const ScreenAdmin = forwardRef<HTMLDivElement, { isVisible?: boolean }>(
           />
         </div>
 
-        {/* Ambient Right Badges */}
+        {/* Right Badges */}
         <div
           style={{
             position: "absolute",
@@ -120,17 +147,15 @@ export const ScreenAdmin = forwardRef<HTMLDivElement, { isVisible?: boolean }>(
             zIndex: 2,
           }}
         >
-          <div
-            style={{
-              background: "rgba(10, 14, 30, 0.85)",
-              border: "1.5px solid rgba(245, 166, 35, 0.45)",
-              borderRadius: "16px",
-              padding: "16px 22px",
-              backdropFilter: "blur(12px)",
-              boxShadow: "0 12px 30px rgba(0, 0, 0, 0.5)",
-            }}
-          >
-            <div style={{ fontSize: "1.1rem", color: "#94a3b8", fontFamily: "monospace", letterSpacing: "1px" }}>
+          <div style={BADGE_SURFACE_GOLD}>
+            <div
+              style={{
+                fontSize: "1.1rem",
+                color: "#94a3b8",
+                fontFamily: "monospace",
+                letterSpacing: "1px",
+              }}
+            >
               LATEST SCAN
             </div>
             <div
@@ -145,20 +170,26 @@ export const ScreenAdmin = forwardRef<HTMLDivElement, { isVisible?: boolean }>(
               TIME IN (18:10)
             </div>
           </div>
-          <div
-            style={{
-              background: "rgba(10, 14, 30, 0.85)",
-              border: "1.5px solid rgba(34, 197, 94, 0.4)",
-              borderRadius: "16px",
-              padding: "16px 22px",
-              backdropFilter: "blur(12px)",
-              boxShadow: "0 12px 30px rgba(0, 0, 0, 0.5)",
-            }}
-          >
-            <div style={{ fontSize: "1.1rem", color: "#94a3b8", fontFamily: "monospace", letterSpacing: "1px" }}>
+
+          <div style={BADGE_SURFACE_GREEN}>
+            <div
+              style={{
+                fontSize: "1.1rem",
+                color: "#94a3b8",
+                fontFamily: "monospace",
+                letterSpacing: "1px",
+              }}
+            >
               SERVO BARRIER
             </div>
-            <div style={{ fontSize: "1.5rem", fontWeight: 700, color: "#4ade80", marginTop: "4px" }}>
+            <div
+              style={{
+                fontSize: "1.5rem",
+                fontWeight: 700,
+                color: "#4ade80",
+                marginTop: "4px",
+              }}
+            >
               NORMAL (AUTO)
             </div>
           </div>

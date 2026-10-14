@@ -1,13 +1,14 @@
 /* =========================================================================
    INTELLIGATE 3D WEBGL SCROLL SHOWCASE (Three.js + R3F + Drei)
-   Hardware-Accelerated Scrollytelling Experience
+   Unified 4-Stage Scrollytelling:
+   00 Hero (Center 3D + Side Wings) -> 01 User -> 02 Admin -> 03 YOLOv11 AI
    Base Color: #05060D | Accents: #5B5BF0, #22C55E, #F5A623
    ========================================================================= */
 
 .showcaseRunway {
   position: relative;
   width: 100%;
-  height: 300vh;
+  height: 400vh;
   background: #05060d;
 }
 
@@ -20,8 +21,10 @@
   background: #05060d;
   overflow: hidden;
   user-select: none;
+  display: flex;
 }
 
+/* Full-bleed WebGL Canvas Layer so 3D screen can glide Center -> Right */
 .canvasWrapper {
   position: absolute;
   inset: 0;
@@ -42,7 +45,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 0 4vw;
-  z-index: 20;
+  z-index: 30;
   pointer-events: none;
 }
 
@@ -53,7 +56,7 @@
   gap: 8px;
   padding: 6px 14px;
   border-radius: 9999px;
-  background: rgba(13, 17, 34, 0.75);
+  background: rgba(13, 17, 34, 0.78);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -84,7 +87,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  background: rgba(13, 17, 34, 0.75);
+  background: rgba(13, 17, 34, 0.78);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -122,23 +125,187 @@
 }
 
 /* -------------------------------------------------------------------------
-   Pinned 2-Column Scrollytelling Overlay inside <Scroll html>
-   - Stays pinned at (0, 0) by counteracting Drei's ScrollHtml transform
-   - Left column takes up 50% width and holds the text descriptions
-   - Right column provides empty space for the traveling 3D UI container
+   STAGE 0: 3-Column Split Hero Wings (Flanking the Centered 3D Screen)
    ------------------------------------------------------------------------- */
-.scrollyOverlay {
+.heroWingsOverlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 3.5vw;
   box-sizing: border-box;
+  z-index: 15;
   pointer-events: none;
-  z-index: 10;
-  will-change: transform;
 }
 
+.heroWingLeft {
+  flex: 0 0 27%;
+  max-width: 390px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  pointer-events: auto;
+  will-change: transform, opacity;
+  background: radial-gradient(circle at left center, rgba(5, 6, 13, 0.85) 0%, transparent 80%);
+  padding: 16px 0;
+}
+
+.heroCenterSpacer {
+  flex: 1 1 46%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.heroWingRight {
+  flex: 0 0 27%;
+  max-width: 390px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  pointer-events: auto;
+  will-change: transform, opacity;
+}
+
+.heroBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 16px;
+  border: 1px solid rgba(245, 166, 35, 0.4);
+  border-radius: 9999px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #f5a623;
+  background: rgba(10, 14, 30, 0.82);
+  margin-bottom: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+}
+
+.heroBadgeDot {
+  width: 7px;
+  height: 7px;
+  background: #f5a623;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #f5a623;
+  animation: beaconPulse 2s ease-in-out infinite;
+}
+
+.heroSplitTitle {
+  font-size: clamp(2.35rem, 3.8vw, 3.85rem);
+  font-weight: 900;
+  line-height: 1.06;
+  letter-spacing: -0.035em;
+  color: #ffffff;
+  margin-bottom: 16px;
+  text-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+}
+
+.heroTitleGradient {
+  background: linear-gradient(135deg, #ffffff 10%, #818cf8 50%, #f5a623 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.heroCaption {
+  font-size: 0.95rem;
+  color: #94a3b8;
+  line-height: 1.6;
+  font-weight: 400;
+}
+
+.heroRightCard {
+  width: 100%;
+  background: rgba(8, 11, 26, 0.78);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(245, 166, 35, 0.35);
+  border-radius: 22px;
+  padding: 26px 28px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.heroRightLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: monospace;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: #f5a623;
+}
+
+.heroRightDesc {
+  font-size: 0.94rem;
+  color: #cbd5e1;
+  line-height: 1.65;
+  font-weight: 300;
+}
+
+.heroRightActions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.btnHeroGold {
+  width: 100%;
+  padding: 13px 22px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: none;
+  background: linear-gradient(135deg, #f5a623, #e09315);
+  color: #060914;
+  box-shadow: 0 4px 20px rgba(245, 166, 35, 0.35);
+}
+
+.btnHeroGold:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(245, 166, 35, 0.55);
+}
+
+.btnHeroSecondary {
+  width: 100%;
+  padding: 12px 22px;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.btnHeroSecondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.28);
+  transform: translateY(-2px);
+}
+
+/* -------------------------------------------------------------------------
+   STAGES 1–3: 2-Column Scrollytelling Overlay (Left Text + Right 3D Screen)
+   ------------------------------------------------------------------------- */
 .twoColumnLayout {
   position: relative;
   width: 100%;
@@ -151,6 +318,7 @@
   padding: 0 4vw;
   gap: 2vw;
   pointer-events: none;
+  z-index: 10;
 }
 
 .leftTextColumn {
@@ -169,10 +337,7 @@
   flex: 0 0 54%;
   width: 54%;
   height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: auto;
+  pointer-events: none;
   z-index: 5;
 }
 
@@ -182,7 +347,7 @@
   top: 50%;
   left: 0;
   width: 100%;
-  max-width: 580px;
+  max-width: 560px;
   transform: translateY(-50%);
   pointer-events: none;
 }
@@ -192,19 +357,18 @@
   width: 100%;
   will-change: transform, opacity;
   pointer-events: none;
-  transition: none; /* Driven directly by useFrame RAF loop for zero lag */
+  transition: none;
 }
 
 /* Glassmorphism Card Container */
 .glassCard {
-  background: rgba(8, 11, 26, 0.72);
+  background: rgba(8, 11, 26, 0.76);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 20px;
   padding: 32px 34px;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), 0 0 35px rgba(91, 91, 240, 0.08);
-  pointer-events: auto;
 }
 
 .stepHeaderRow {
@@ -417,7 +581,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 0 4vw;
-  z-index: 20;
+  z-index: 30;
   pointer-events: none;
 }
 
@@ -426,8 +590,9 @@
   align-items: center;
   gap: 8px;
   font-size: 0.78rem;
-  color: #64748b;
+  color: #94a3b8;
   font-family: monospace;
+  transition: opacity 0.2s ease;
 }
 
 .scrollHintDot {
@@ -453,13 +618,68 @@
 }
 
 /* -------------------------------------------------------------------------
-   Responsive Media Queries
+   Responsive Media Queries (< 1180px and < 968px)
    ------------------------------------------------------------------------- */
+@media (max-width: 1180px) {
+  .heroSplitTitle {
+    font-size: clamp(2rem, 3.2vw, 2.8rem);
+  }
+  .heroRightCard {
+    padding: 20px 22px;
+  }
+}
+
 @media (max-width: 968px) {
+  /* On mobile/tablet, 3D screen sits in the upper half (y = +0.62 in 3D),
+     and Hero / Feature cards sit cleanly in the bottom half without overlap */
+  .heroWingsOverlay {
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 16px 16px 68px;
+    gap: 12px;
+  }
+
+  .heroWingLeft {
+    flex: 0 0 auto;
+    max-width: 100%;
+    width: 100%;
+    align-items: center;
+    text-align: center;
+    padding: 0;
+  }
+
+  .heroSplitTitle {
+    font-size: 1.9rem;
+    margin-bottom: 6px;
+  }
+
+  .heroCaption {
+    display: none;
+  }
+
+  .heroCenterSpacer {
+    display: none;
+  }
+
+  .heroWingRight {
+    flex: 0 0 auto;
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .heroRightCard {
+    padding: 16px 18px;
+    gap: 10px;
+  }
+
+  .heroRightActions {
+    flex-direction: row;
+  }
+
   .twoColumnLayout {
     flex-direction: column;
     justify-content: flex-end;
-    padding: 16px 16px 74px;
+    padding: 16px 16px 68px;
   }
 
   .leftTextColumn {
@@ -470,14 +690,12 @@
   }
 
   .rightCanvasColumn {
-    width: 100%;
-    height: 45vh;
-    display: flex;
+    display: none;
   }
 
   .textSectionSlot {
     position: absolute;
-    bottom: 74px;
+    bottom: 68px;
     top: auto;
     left: 16px;
     right: 16px;
@@ -525,4 +743,8 @@
     top: 85%;
     opacity: 0.8;
   }
+}
+
+.laserSweepLine {
+  animation: laserSweep 2.5s ease-in-out infinite alternate;
 }

@@ -1,9 +1,10 @@
 "use client";
 
 import React, { forwardRef } from "react";
+import styles from "./ThreeScrollShowcase.module.css";
 
 export const ScreenYolo = forwardRef<HTMLDivElement, { isVisible?: boolean }>(
-  function ScreenYolo({ isVisible = true }, ref) {
+  function ScreenYolo(_props, ref) {
     return (
       <div
         ref={ref}
@@ -49,8 +50,7 @@ export const ScreenYolo = forwardRef<HTMLDivElement, { isVisible?: boolean }>(
             fontSize: "1.35rem",
             fontWeight: 700,
             color: "#f8fafc",
-            background: "rgba(5, 7, 17, 0.85)",
-            backdropFilter: "blur(12px)",
+            background: "rgba(5, 7, 17, 0.94)",
             padding: "12px 24px",
             borderRadius: "12px",
             border: "1.5px solid rgba(255, 255, 255, 0.15)",
@@ -58,7 +58,9 @@ export const ScreenYolo = forwardRef<HTMLDivElement, { isVisible?: boolean }>(
             zIndex: 5,
           }}
         >
-          <span style={{ display: "inline-flex", alignItems: "center", gap: 14 }}>
+          <span
+            style={{ display: "inline-flex", alignItems: "center", gap: 14 }}
+          >
             <span
               style={{
                 width: 12,
@@ -75,8 +77,9 @@ export const ScreenYolo = forwardRef<HTMLDivElement, { isVisible?: boolean }>(
           </span>
         </div>
 
-        {/* Animated Sweeping Laser Scan Line */}
+        {/* Animated Sweeping Laser Scan Line (Uses CSS Module class) */}
         <div
+          className={styles.laserSweepLine}
           style={{
             position: "absolute",
             left: 0,
@@ -86,7 +89,6 @@ export const ScreenYolo = forwardRef<HTMLDivElement, { isVisible?: boolean }>(
               "linear-gradient(90deg, transparent, #f5a623 30%, #ff4444 50%, #f5a623 70%, transparent)",
             boxShadow: "0 0 20px #f5a623, 0 0 40px rgba(245, 166, 35, 0.6)",
             zIndex: 4,
-            animation: "laserSweep 2.5s ease-in-out infinite alternate",
           }}
         />
 
@@ -104,11 +106,10 @@ export const ScreenYolo = forwardRef<HTMLDivElement, { isVisible?: boolean }>(
             fontSize: "1.3rem",
             fontWeight: 700,
             color: "#e2e8f0",
-            background: "rgba(5, 7, 17, 0.85)",
-            backdropFilter: "blur(12px)",
+            background: "rgba(5, 7, 17, 0.94)",
             padding: "10px 24px",
             borderRadius: "12px",
-            border: "1.5px solid rgba(245, 166, 35, 0.4)",
+            border: "1.5px solid rgba(245, 166, 35, 0.45)",
             boxShadow: "0 8px 30px rgba(0, 0, 0, 0.7)",
             zIndex: 5,
           }}
