@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
 import { useScroll } from "framer-motion";
 import { getLenis } from "../lib/lenis";
@@ -13,11 +13,9 @@ import {
   RefreshCw,
   Eye,
   CheckCircle2,
-  Cpu,
   Sparkles,
   Download,
   ArrowRight,
-  Compass,
 } from "lucide-react";
 
 const STAGE_HOLD_OFFSETS: Record<StageIndex, number> = {
@@ -28,7 +26,6 @@ const STAGE_HOLD_OFFSETS: Record<StageIndex, number> = {
 };
 
 export function ThreeScrollShowcase(): React.JSX.Element {
-  const [activeStage, setActiveStage] = useState<StageIndex>(0);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // 400vh parent runway tracked by Framer Motion useScroll
@@ -44,17 +41,10 @@ export function ThreeScrollShowcase(): React.JSX.Element {
   const textRef2 = useRef<HTMLDivElement>(null);
   const textRef3 = useRef<HTMLDivElement>(null);
 
-  // Top HUD Bar Pill Refs (0..3)
-  const hudStagePillsRef = useRef<(HTMLButtonElement | null)[]>([]);
-
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"],
   });
-
-  const handleStageChange = useCallback((stage: StageIndex) => {
-    setActiveStage(stage);
-  }, []);
 
   const scrollToStage = (stageIndex: StageIndex) => {
     if (!containerRef.current) return;
@@ -109,83 +99,12 @@ export function ThreeScrollShowcase(): React.JSX.Element {
               textRef1={textRef1}
               textRef2={textRef2}
               textRef3={textRef3}
-              hudStagePillsRef={hudStagePillsRef}
-              onStageChange={handleStageChange}
             />
           </Canvas>
         </div>
 
         {/* =================================================================
-            2. TOP HUD BAR (Brand Beacon & 4 Stage Navigation Pills)
-            ================================================================= */}
-        <header className={styles.hudTopBar}>
-          <div className={styles.hudBrandBadge}>
-            <span className={styles.pulseBeacon} />
-            <span>INTELLIGATE 3D ENGINE</span>
-          </div>
-
-          <nav className={styles.hudStagePill} aria-label="3D Scrollytelling Stages">
-            <button
-              type="button"
-              ref={(el) => {
-                hudStagePillsRef.current[0] = el;
-              }}
-              className={`${styles.hudStageItem} ${
-                activeStage === 0 ? styles.hudStageItemActive : ""
-              }`}
-              onClick={() => scrollToStage(0)}
-              aria-label="Navigate to 00 Hero"
-            >
-              <Compass size={13} />
-              <span>00 Hero</span>
-            </button>
-            <button
-              type="button"
-              ref={(el) => {
-                hudStagePillsRef.current[1] = el;
-              }}
-              className={`${styles.hudStageItem} ${
-                activeStage === 1 ? styles.hudStageItemActive : ""
-              }`}
-              onClick={() => scrollToStage(1)}
-              aria-label="Navigate to 01 User App"
-            >
-              <Smartphone size={13} />
-              <span>01 User App</span>
-            </button>
-            <button
-              type="button"
-              ref={(el) => {
-                hudStagePillsRef.current[2] = el;
-              }}
-              className={`${styles.hudStageItem} ${
-                activeStage === 2 ? styles.hudStageItemActive : ""
-              }`}
-              onClick={() => scrollToStage(2)}
-              aria-label="Navigate to 02 Admin Side"
-            >
-              <ShieldCheck size={13} />
-              <span>02 Admin Side</span>
-            </button>
-            <button
-              type="button"
-              ref={(el) => {
-                hudStagePillsRef.current[3] = el;
-              }}
-              className={`${styles.hudStageItem} ${
-                activeStage === 3 ? styles.hudStageItemActive : ""
-              }`}
-              onClick={() => scrollToStage(3)}
-              aria-label="Navigate to 03 YOLOv11 AI"
-            >
-              <Cpu size={13} />
-              <span>03 YOLOv11 AI</span>
-            </button>
-          </nav>
-        </header>
-
-        {/* =================================================================
-            3. STAGE 0: HERO SPLIT WINGS (Flanking the Centered 3D Screen)
+            2. STAGE 0: HERO SPLIT WINGS (Flanking the Centered 3D Screen)
             ================================================================= */}
         <div className={styles.heroWingsOverlay}>
           {/* Left Hero Wing: Capstone Badge & Main Title */}
@@ -207,7 +126,7 @@ export function ThreeScrollShowcase(): React.JSX.Element {
             </p>
           </div>
 
-          {/* Center Gap (~44% width) reserved for the floating 3D Monitor */}
+          {/* Center Gap (~46% width) reserved for the floating 3D Screen */}
           <div className={styles.heroCenterSpacer} aria-hidden="true" />
 
           {/* Right Hero Wing: Thesis Overview & Action CTAs */}
@@ -249,7 +168,7 @@ export function ThreeScrollShowcase(): React.JSX.Element {
         </div>
 
         {/* =================================================================
-            4. STAGES 1–3: LEFT-COLUMN DESCRIPTIONS (As 3D Screen Glides Right)
+            3. STAGES 1–3: LEFT-COLUMN DESCRIPTIONS (As 3D Screen Glides Right)
             ================================================================= */}
         <div className={styles.twoColumnLayout}>
           <div className={styles.leftTextColumn}>
@@ -596,12 +515,12 @@ export function ThreeScrollShowcase(): React.JSX.Element {
             </div>
           </div>
 
-          {/* Right Column Spacer (3D Monitor glides into this space on Stages 1-3) */}
+          {/* Right Column Spacer (3D Screen glides into this space on Stages 1-3) */}
           <div className={styles.rightCanvasColumn} aria-hidden="true" />
         </div>
 
         {/* =================================================================
-            5. BOTTOM HUD BAR (Scroll Hint & Hardware Acceleration Badge)
+            4. BOTTOM HUD BAR (Scroll Hint & Hardware Acceleration Badge)
             ================================================================= */}
         <footer className={styles.hudBottomBar}>
           <div ref={heroScrollHintRef} className={styles.scrollHint}>
