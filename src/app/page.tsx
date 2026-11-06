@@ -4,10 +4,12 @@ import React, { useEffect, useRef } from "react";
 import Lenis from "lenis";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ProposalScrollySection } from "./components/ProposalScrollySection";
 import { ThreeScrollShowcase } from "./components/ThreeScrollShowcase";
-import { setLenis, getLenis } from "./lib/lenis";
+import { DemoVideoShowcase } from "./components/DemoVideoShowcase";
+import { DownloadMobileAppSection } from "./components/DownloadMobileAppSection";
+import { setLenis } from "./lib/lenis";
 import styles from "./page.module.css";
-import { Download, ArrowUp } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -38,7 +40,7 @@ export default function Home(): React.JSX.Element {
     gsap.ticker.add(tickerCallback);
     gsap.ticker.lagSmoothing(0);
 
-    // Drive top progress bar directly via DOM ref (0 React/Zustand re-renders)
+    // Drive top progress bar directly via DOM ref
     const pageTrigger = ScrollTrigger.create({
       trigger: document.documentElement,
       start: "top top",
@@ -52,7 +54,7 @@ export default function Home(): React.JSX.Element {
 
     const refreshTimer = setTimeout(() => {
       ScrollTrigger.refresh();
-    }, 150);
+    }, 200);
 
     return () => {
       clearTimeout(refreshTimer);
@@ -63,18 +65,9 @@ export default function Home(): React.JSX.Element {
     };
   }, []);
 
-  const scrollToTop = () => {
-    const lenis = getLenis();
-    if (lenis) {
-      lenis.scrollTo(0);
-    } else {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  };
-
   return (
     <main className={styles.mainWrapper}>
-      {/* Top Scroll Progress Bar */}
+      {/* Top Global Scroll Progress Bar */}
       <div
         ref={progressBarRef}
         className={styles.progressBar}
@@ -83,7 +76,15 @@ export default function Home(): React.JSX.Element {
       />
 
       {/* ===================================================================
-          1. UNIFIED 4-STAGE 3D WEBGL SHOWCASE (400vh)
+          1. PROPOSAL DEFENSE PRESENTATION (Page 1 + Scrollytelling)
+          - Slide 1: Title Proposal Defense, IntelliGate, Proponents, Concentric Radar
+          - Slide 2: Background of the Study & Campus Vulnerabilities
+          - Slide 3: Statement of the Problem & System Objectives
+          =================================================================== */}
+      <ProposalScrollySection />
+
+      {/* ===================================================================
+          2. UNIFIED 4-STAGE 3D WEBGL SHOWCASE (User Screenshot)
           Stage 00: Hero (3D Screen in Middle + Left/Right Hero Wings)
           Stage 01: User App (3D Glides Right + Left User Description)
           Stage 02: Admin Side (3D Rotates + Left Admin Description)
@@ -92,46 +93,17 @@ export default function Home(): React.JSX.Element {
       <ThreeScrollShowcase />
 
       {/* ===================================================================
-          2. FINAL CTA SECTION
-          "Experience the Future of Campus Security"
+          3. LIVE SYSTEM DEMONSTRATION VIDEO
+          - Plays 91eb9641-ab6a-4afe-9856-1d0b517557cd.mp4
+          - Play, pause, resume controls, timeline scrubber, and telemetry
           =================================================================== */}
-      <section className={styles.finalCtaSection} id="section-final">
-        <div className={styles.finalCtaWrapper}>
-          <h2 className={styles.finalCtaTitle}>
-            Experience the Future <br />
-            of Campus{" "}
-            <span className={styles.finalCtaSecurityGradient}>Security</span>
-          </h2>
+      <DemoVideoShowcase />
 
-          <p className={styles.finalCtaSubtitle}>
-            IntelliGate eliminates gate queues, prevents unauthorized vehicle
-            entry, and streamlines university vehicular flow with AI automation.
-          </p>
-
-          <div className={styles.finalCtaActions}>
-            <a
-              href="https://drive.google.com/drive/folders/119sLWwebH6a5DMppAmZeSClt8jMkla7V?usp=sharing"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.btnDownloadPill}
-              aria-label="Download Mobile App"
-            >
-              <span>Download Mobile App</span>
-              <Download size={20} />
-            </a>
-
-            <button
-              type="button"
-              className={styles.btnBackToTop}
-              onClick={scrollToTop}
-              aria-label="Back to Top"
-            >
-              <span>Back to Top</span>
-              <ArrowUp size={18} />
-            </button>
-          </div>
-        </div>
-      </section>
+      {/* ===================================================================
+          4. DOWNLOAD MOBILE APP SECTION
+          - Direct Google Drive APK link & Phone QR code scanner
+          =================================================================== */}
+      <DownloadMobileAppSection />
     </main>
   );
 }

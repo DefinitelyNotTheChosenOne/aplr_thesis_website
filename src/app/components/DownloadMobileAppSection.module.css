@@ -1,0 +1,307 @@
+/* =========================================================================
+   Download Mobile App Section
+   Theme: High-contrast Dark (#05060d) with Gold (#f5a623) & Emerald (#00a884)
+   ========================================================================= */
+
+.downloadSection {
+  position: relative;
+  width: 100%;
+  min-height: 90vh;
+  background: radial-gradient(circle at 50% 60%, #0d1733 0%, #070914 60%, #04050a 100%);
+  color: #ffffff;
+  padding: 100px 4vw 80px;
+  box-sizing: border-box;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.bgGlow {
+  position: absolute;
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80vw;
+  height: 450px;
+  background: radial-gradient(circle, rgba(245, 166, 35, 0.12) 0%, rgba(99, 102, 241, 0.1) 45%, transparent 70%);
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.contentWrapper {
+  position: relative;
+  z-index: 10;
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.appBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 18px;
+  border-radius: 9999px;
+  background: rgba(245, 166, 35, 0.1);
+  border: 1px solid rgba(245, 166, 35, 0.35);
+  font-family: monospace;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: #ffc84a;
+  margin-bottom: 22px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.appBadgeDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f5a623;
+  box-shadow: 0 0 10px #f5a623;
+}
+
+.sectionTitle {
+  font-size: clamp(2.8rem, 5.8vw, 5rem);
+  font-weight: 900;
+  line-height: 1.06;
+  letter-spacing: -0.035em;
+  color: #ffffff;
+  margin-bottom: 20px;
+}
+
+.titleGradient {
+  background: linear-gradient(135deg, #ffffff 30%, #f5a623 75%, #ffc84a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.sectionSubtitle {
+  font-size: clamp(1.05rem, 1.8vw, 1.25rem);
+  color: #94a3b8;
+  max-width: 720px;
+  line-height: 1.7;
+  font-weight: 300;
+  margin-bottom: 44px;
+}
+
+/* -------------------------------------------------------------------------
+   Card Grid: Download Box & Direct QR Code Scanner
+   ------------------------------------------------------------------------- */
+.downloadGrid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 32px;
+  align-items: stretch;
+  width: 100%;
+  margin-bottom: 48px;
+}
+
+/* Left Card: Download CTA & App Specs */
+.downloadCard {
+  background: rgba(13, 17, 38, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-top: 1px solid rgba(245, 166, 35, 0.4);
+  border-radius: 24px;
+  padding: 36px 38px;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: left;
+}
+
+.cardHeader {
+  margin-bottom: 24px;
+}
+
+.cardVersionRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.versionBadge {
+  font-family: monospace;
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  color: #4ade80;
+}
+
+.sizeBadge {
+  font-family: monospace;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+.cardHeader h3 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 8px;
+}
+
+.cardHeader p {
+  font-size: 0.94rem;
+  color: #cbd5e1;
+  line-height: 1.6;
+}
+
+.featuresMiniList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.featureMiniItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.88rem;
+  color: #cbd5e1;
+}
+
+.featureCheckIcon {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(34, 197, 94, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4ade80;
+}
+
+.btnDownloadPill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 18px 36px;
+  border-radius: 9999px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  text-decoration: none;
+  background: linear-gradient(135deg, #f5a623, #e09315);
+  color: #060914;
+  box-shadow: 0 4px 24px rgba(245, 166, 35, 0.45);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border: none;
+  cursor: pointer;
+}
+
+.btnDownloadPill:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 36px rgba(245, 166, 35, 0.7);
+  background: linear-gradient(135deg, #ffc84a, #f5a623);
+}
+
+/* Right Card: Mobile Phone QR Code Scan */
+.qrCard {
+  background: rgba(13, 17, 38, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  padding: 32px 28px;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.qrContainer {
+  background: #ffffff;
+  padding: 16px;
+  border-radius: 18px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+  margin-bottom: 20px;
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+.qrContainer:hover {
+  transform: scale(1.04);
+}
+
+.qrTitle {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 6px;
+}
+
+.qrDescription {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  line-height: 1.5;
+  max-width: 260px;
+}
+
+/* -------------------------------------------------------------------------
+   Bottom Actions (Back to Top)
+   ------------------------------------------------------------------------- */
+.bottomActions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.btnBackToTop {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 30px;
+  border-radius: 9999px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.05);
+  color: #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: all 0.25s ease;
+}
+
+.btnBackToTop:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.35);
+  transform: translateY(-2px);
+}
+
+/* -------------------------------------------------------------------------
+   Responsive Breakpoints
+   ------------------------------------------------------------------------- */
+@media (max-width: 868px) {
+  .downloadGrid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .downloadCard {
+    padding: 24px 22px;
+  }
+
+  .sectionTitle {
+    font-size: 2.4rem;
+  }
+}
+

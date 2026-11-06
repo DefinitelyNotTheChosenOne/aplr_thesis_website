@@ -154,9 +154,19 @@ export function ThreeScrollShowcase(): React.JSX.Element {
                 </button>
 
                 <a
-                  href="https://drive.google.com/drive/folders/119sLWwebH6a5DMppAmZeSClt8jMkla7V?usp=sharing"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="#section-download-app"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const target = document.getElementById("section-download-app");
+                    if (target) {
+                      const lenis = getLenis();
+                      if (lenis) {
+                        lenis.scrollTo(target);
+                      } else {
+                        target.scrollIntoView({ behavior: "smooth" });
+                      }
+                    }
+                  }}
                   className={styles.btnHeroSecondary}
                 >
                   <span>Download App</span>
